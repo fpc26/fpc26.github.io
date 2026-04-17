@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KosmoStream Guide — Biodynamics, Space Weather &amp; Crop Timing | KosmoGrow</title>
+  <meta name="description"
+        content="The science behind KosmoStream: how biodynamic day types, the lunar sidereal calendar, and real-time space weather (Kp index) combine to guide every planting decision." />
+  <link rel="canonical" href="https://kosmogrow.com/kosmostream-guide.html" />
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://kosmogrow.com/kosmostream-guide.html" />
+  <meta property="og:title"       content="KosmoStream Guide — Biodynamics &amp; Space Weather" />
+  <meta property="og:description" content="Evidence-based explanations of biodynamic day types, lunar sidereal positioning, Kp geomagnetic index, and how to integrate all three into daily growing decisions." />
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS CDN (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ─── Base ──────────────── */
+    body {
+      background-color: #060610;
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    /* ─── Star canvas ───────── */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    /* ─── Content above canvas ─ */
+    .above-canvas { position: relative; z-index: 1; }
+
+    /* ─── Gradient text ─────── */
+    .gradient-text {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #6ee7b7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── Scroll-reveal ─────── */
+    .fade-up {
+      opacity: 0;
+      -webkit-transform: translateY(28px);
+              transform: translateY(28px);
+      will-change: transform;
+      -webkit-transition: opacity 0.55s ease, -webkit-transform 0.55s ease;
+              transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      -webkit-transform: translateY(0);
+              transform: translateY(0);
+    }
+    .delay-75  { -webkit-transition-delay:  75ms; transition-delay:  75ms; }
+    .delay-150 { -webkit-transition-delay: 150ms; transition-delay: 150ms; }
+    .delay-225 { -webkit-transition-delay: 225ms; transition-delay: 225ms; }
+    .delay-300 { -webkit-transition-delay: 300ms; transition-delay: 300ms; }
+
+    /* ─── Mobile nav ────────── */
+    #mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      -webkit-transition: max-height 0.3s ease;
+              transition: max-height 0.3s ease;
+    }
+    #mobile-menu.open { max-height: 520px; }
+
+    /* ─── Card hover glow ───── */
+    .card-glow {
+      -webkit-transition: border-color 0.3s ease, box-shadow 0.3s ease, -webkit-transform 0.2s ease;
+              transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    .card-glow:hover {
+      box-shadow: 0 0 28px rgba(52,211,153,0.12), 0 0 56px rgba(52,211,153,0.06);
+      -webkit-transform: translateY(-2px);
+              transform: translateY(-2px);
+    }
+
+    /* ─── Day-type card glows ── */
+    .fruit-glow:hover  { box-shadow: 0 0 28px rgba(251,146,60,0.14); }
+    .leaf-glow:hover   { box-shadow: 0 0 28px rgba(34,211,238,0.14); }
+    .root-glow:hover   { box-shadow: 0 0 28px rgba(234,179,8,0.14); }
+    .flower-glow:hover { box-shadow: 0 0 28px rgba(167,139,250,0.14); }
+
+    /* ─── Inline citation links */
+    sup a {
+      color: #34d399;
+      text-decoration: none;
+      font-size: 0.7em;
+    }
+    sup a:hover { text-decoration: underline; }
+
+    /* ─── Kp table ──────────── */
+    .kp-table th, .kp-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      vertical-align: top;
+    }
+    .kp-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
+    .kp-table td { font-size: 0.875rem; color: #cbd5e1; }
+    .kp-row-green  { background: rgba(52,211,153,0.05); }
+    .kp-row-yellow { background: rgba(234,179,8,0.06); }
+    .kp-row-orange { background: rgba(251,146,60,0.07); }
+    .kp-row-red    { background: rgba(239,68,68,0.07); }
+
+    /* ─── Custom scrollbar ───── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #060610; }
+    ::-webkit-scrollbar-thumb { background: #34d399; border-radius: 3px; }
+  </style>
+
+  <noscript>
+    <style>
+      #mobile-menu { max-height: none !important; }
+      .fade-up { opacity: 1 !important; -webkit-transform: none !important; transform: none !important; }
+    </style>
+  </noscript>
+</head>
+
+<body class="text-slate-100 antialiased">
+
+  <!-- Skip to main content -->
+  <a href="#main-content"
+     class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50
+            focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-black focus:rounded-lg focus:font-semibold">
+    Skip to content
+  </a>
+
+  <!-- ░░░ STAR FIELD CANVAS ░░░ -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <!-- ░░░ NAVIGATION ░░░ -->
+  <header class="above-canvas sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-[#060610]/80">
+    <nav role="navigation" aria-label="Main navigation" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 text-xl font-bold text-white
+                           hover:text-emerald-400 transition-colors duration-200">
+          KosmoGrow <span aria-hidden="true">🌌🌿</span>
+        </a>
+
+        <!-- Desktop links -->
+        <div class="hidden md:flex items-center gap-1">
+          <a href="/"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Home</a>
+          <a href="/#about"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">About</a>
+          <a href="/#services"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Services</a>
+          <a href="/kosmostream-features.html"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">KosmoStream Features</a>
+          <a href="/kosmostream-guide.html"
+             class="px-3 py-2 text-sm font-medium text-emerald-400
+                    rounded-lg bg-emerald-500/10 transition-all duration-200"
+             aria-current="page">Science Guide</a>
+          <a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+             class="px-3 py-2 text-sm font-medium text-emerald-400 hover:text-emerald-300
+                    rounded-lg hover:bg-emerald-500/10 transition-all duration-200">
+            KosmoStream Live ↗
+          </a>
+          <a href="/#contact"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Contact</a>
+        </div>
+
+        <!-- Hamburger -->
+        <button id="menu-btn"
+                aria-label="Toggle mobile menu"
+                aria-expanded="false"
+                aria-controls="mobile-menu"
+                class="md:hidden p-2 rounded-lg text-slate-300 hover:text-emerald-400
+                       hover:bg-white/5 transition-all duration-200">
+          <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile menu panel -->
+      <div id="mobile-menu" role="menu" aria-label="Mobile navigation">
+        <div class="py-3 border-t border-white/10 space-y-1">
+          <a href="/" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Home</a>
+          <a href="/#about" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">About</a>
+          <a href="/#services" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Services</a>
+          <a href="/kosmostream-features.html" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">KosmoStream Features</a>
+          <a href="/kosmostream-guide.html" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-emerald-400 bg-emerald-500/10
+                    rounded-lg transition-all duration-200" aria-current="page">Science Guide</a>
+          <a href="/KosmoStream" target="_blank" rel="noopener noreferrer" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-emerald-400 hover:text-emerald-300
+                    hover:bg-emerald-500/10 rounded-lg transition-all duration-200">
+            KosmoStream Live ↗
+          </a>
+          <a href="/#contact" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Contact</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ░░░ MAIN ░░░ -->
+  <main id="main-content" class="above-canvas">
+
+    <!-- ═══════════════════════════════════════════════════════
+         HERO
+    ═══════════════════════════════════════════════════════ -->
+    <section class="relative min-h-[78vh] flex items-center justify-center overflow-hidden px-4 py-20">
+      <!-- Nebula blobs -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-[380px] h-[380px] rounded-full bg-emerald-800/8 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 w-[800px] h-[800px] rounded-full bg-emerald-900/8 blur-3xl
+                    -translate-x-1/2 -translate-y-1/2"></div>
+      </div>
+
+      <div class="relative text-center max-w-4xl mx-auto">
+        <!-- Breadcrumb -->
+        <nav aria-label="Breadcrumb" class="mb-6 flex items-center justify-center gap-2 text-xs text-slate-500">
+          <a href="/" class="hover:text-emerald-400 transition-colors duration-200">Home</a>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+          <a href="/kosmostream-features.html" class="hover:text-emerald-400 transition-colors duration-200">KosmoStream Features</a>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+          <span class="text-emerald-400 font-medium">Science Guide</span>
+        </nav>
+
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full
+                    border border-emerald-500/30 bg-emerald-500/10
+                    text-emerald-400 text-sm font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+          Evidence-Based Science &amp; Field Guide
+        </div>
+
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-5 leading-none">
+          <span class="text-white">The Science Behind</span><br/>
+          <span class="gradient-text">Every Signal</span>
+        </h1>
+
+        <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-4 leading-relaxed">
+          KosmoStream draws on three converging bodies of evidence to generate
+          its daily planting guidance.
+        </p>
+
+        <!-- Three pillars summary line -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-10">
+          <a href="#biodynamic-days"
+             class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                    bg-orange-500/10 border border-orange-500/25 text-orange-400
+                    text-sm font-medium hover:bg-orange-500/20 transition-all duration-200">
+            📅 Biodynamic Calendar
+          </a>
+          <a href="#space-weather"
+             class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                    bg-yellow-500/10 border border-yellow-500/25 text-yellow-400
+                    text-sm font-medium hover:bg-yellow-500/20 transition-all duration-200">
+            ⚡ Space Weather &amp; Kp Index
+          </a>
+          <a href="#decision-flow"
+             class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                    bg-sky-500/10 border border-sky-500/25 text-sky-400
+                    text-sm font-medium hover:bg-sky-500/20 transition-all duration-200">
+            🌤️ Integrated Daily Decision
+          </a>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                    text-black font-semibold text-base transition-all duration-200
+                    shadow-lg shadow-emerald-500/25 hover:-translate-y-0.5">
+            Launch KosmoStream ↗
+          </a>
+          <a href="/kosmostream-features.html"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl border border-white/20
+                    text-slate-300 hover:text-white hover:border-white/40
+                    font-medium text-base transition-all duration-200 hover:-translate-y-0.5">
+            ← Back to Features
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         BIODYNAMIC DAY TYPES
+    ═══════════════════════════════════════════════════════ -->
+    <section id="biodynamic-days" class="relative py-24 px-4">
+      <div class="max-w-7xl mx-auto">
+
+        <!-- Heading -->
+        <div class="text-center mb-10 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Biodynamic Calendar
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            The Four <span class="gradient-text">Biodynamic Day Types</span>
+          </h2>
+          <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            Maria Thun's multi-decade field trials — begun in the 1950s and
+            published annually in her <em>Biodynamic Sowing and Planting
+            Calendar</em><sup><a href="#ref-2">[2]</a></sup> — demonstrated
+            consistent, repeatable correlations between the Moon's sidereal
+            position and the quality or yield of specific crop types. Rudolf
+            Steiner's foundational <em>Agriculture Course</em> (1924)
+            <sup><a href="#ref-1">[1]</a></sup> provided the theoretical
+            framework; Thun's empirical observations gave it measurable form.
+          </p>
+        </div>
+
+        <!-- ── SIDEREAL vs TROPICAL callout ── -->
+        <div class="fade-up mb-12 p-5 rounded-2xl border border-emerald-500/20 bg-emerald-950/30
+                    flex gap-4 items-start max-w-4xl mx-auto">
+          <span class="text-2xl mt-0.5" aria-hidden="true">🔭</span>
+          <div>
+            <p class="text-emerald-300 font-semibold mb-1 text-sm">Sidereal, not Tropical</p>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              The biodynamic calendar is calculated using the <strong class="text-slate-200">sidereal zodiac</strong> —
+              the Moon's actual position relative to the fixed star constellations as seen from Earth.
+              This differs from the <em>tropical</em> zodiac used in Western astrology by approximately
+              23–25° (the precession of the equinoxes). KosmoStream computes sidereal lunar
+              positions directly from ephemeris data, consistent with the methodology used in
+              Thun's original trials.<sup><a href="#ref-2">[2]</a></sup>
+            </p>
+          </div>
+        </div>
+
+        <!-- ── 2×2 Day Type Card Grid ── -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- ─── FRUIT DAYS ─── -->
+          <div class="fade-up card-glow fruit-glow rounded-2xl border border-white/10
+                      hover:border-orange-500/30 bg-white/5 overflow-hidden
+                      transition-all duration-300">
+            <!-- Header band -->
+            <div class="px-7 py-5 bg-gradient-to-r from-orange-500/15 to-amber-500/8
+                        border-b border-orange-500/20">
+              <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl" aria-hidden="true">🔥</span>
+                  <div>
+                    <h3 class="text-xl font-bold text-white">Fruit Days</h3>
+                    <span class="text-xs text-orange-400 font-medium uppercase tracking-wider">Fire Element</span>
+                  </div>
+                </div>
+                <!-- Zodiac pills -->
+                <div class="flex flex-wrap gap-1.5" aria-label="Moon in sidereal constellations">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-500/15 text-orange-300 border border-orange-500/25">Aries</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-500/15 text-orange-300 border border-orange-500/25">Leo</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-500/15 text-orange-300 border border-orange-500/25">Sagittarius</span>
+                </div>
+              </div>
+            </div>
+            <!-- Body -->
+            <div class="px-7 py-6 space-y-5">
+              <!-- Crops -->
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Best Crops &amp; Activities</p>
+                <ul class="space-y-1 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-orange-400 mt-0.5 flex-shrink-0">▸</span>Fruiting vegetables: tomatoes, cucumbers, courgettes, marrows, pumpkins, squash, sweet peppers, chillies, aubergines</li>
+                  <li class="flex gap-2"><span class="text-orange-400 mt-0.5 flex-shrink-0">▸</span>Legumes grown for seed: beans (runner, French, broad), peas</li>
+                  <li class="flex gap-2"><span class="text-orange-400 mt-0.5 flex-shrink-0">▸</span>Berries: strawberries, raspberries, currants, gooseberries</li>
+                  <li class="flex gap-2"><span class="text-orange-400 mt-0.5 flex-shrink-0">▸</span>Tree fruits: apples, pears, plums, cherries, peaches</li>
+                  <li class="flex gap-2"><span class="text-orange-400 mt-0.5 flex-shrink-0">▸</span>Corn / maize (grown for grain); seed-saving for fruiting species</li>
+                  <li class="flex gap-2"><span class="text-orange-400 mt-0.5 flex-shrink-0">▸</span><em>Activities:</em> sow, transplant, prune for fruit set, harvest (best flavour and storage life), apply biodynamic horn silica (BD 501)</li>
+                </ul>
+              </div>
+              <!-- Rationale -->
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Cosmic Rationale</p>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Steiner proposed that fire-element forces streaming through the
+                  cosmos are directed toward the seed and fruiting organs when the
+                  Moon transits fire-element constellations.<sup><a href="#ref-1">[1]</a></sup>
+                  Thun's field trials corroborated this: sowing under these conditions
+                  consistently produced measurable improvements in fruit quality and,
+                  in many cases, yield — across multiple crop species and growing
+                  seasons.<sup><a href="#ref-2">[2]</a></sup>
+                </p>
+              </div>
+              <!-- KosmoGrow synergy -->
+              <div class="rounded-xl px-4 py-3 bg-orange-500/8 border border-orange-500/15">
+                <p class="text-xs text-orange-300 italic leading-relaxed">
+                  <strong class="not-italic font-semibold">KosmoGrow synergy:</strong>
+                  Electromagnetic enhancers (electroculture) on fruit days may boost ion
+                  flow driving fruit set; 432 Hz resonance sessions can be timed here
+                  consistent with the vibrational principles outlined by Jenny.<sup><a href="#ref-8">[8]</a></sup>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── LEAF DAYS ─── -->
+          <div class="fade-up delay-150 card-glow leaf-glow rounded-2xl border border-white/10
+                      hover:border-cyan-500/30 bg-white/5 overflow-hidden
+                      transition-all duration-300">
+            <!-- Header band -->
+            <div class="px-7 py-5 bg-gradient-to-r from-cyan-500/12 to-sky-500/6
+                        border-b border-cyan-500/20">
+              <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl" aria-hidden="true">💧</span>
+                  <div>
+                    <h3 class="text-xl font-bold text-white">Leaf Days</h3>
+                    <span class="text-xs text-cyan-400 font-medium uppercase tracking-wider">Water Element</span>
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-1.5" aria-label="Moon in sidereal constellations">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">Cancer</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">Scorpio</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">Pisces</span>
+                </div>
+              </div>
+            </div>
+            <div class="px-7 py-6 space-y-5">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Best Crops &amp; Activities</p>
+                <ul class="space-y-1 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-cyan-400 mt-0.5 flex-shrink-0">▸</span>Salad crops: lettuce (all varieties), spinach, rocket/arugula, endive, chicory, chard, sorrel</li>
+                  <li class="flex gap-2"><span class="text-cyan-400 mt-0.5 flex-shrink-0">▸</span>Brassica leaves: kale, cabbage, Brussels sprouts, bok choy, pak choi</li>
+                  <li class="flex gap-2"><span class="text-cyan-400 mt-0.5 flex-shrink-0">▸</span>Herbs grown for their leaves: basil, parsley, chives, mint, lemon balm, lovage, celery leaf</li>
+                  <li class="flex gap-2"><span class="text-cyan-400 mt-0.5 flex-shrink-0">▸</span>Lawns, turf grasses, fodder crops, and cover crops</li>
+                  <li class="flex gap-2"><span class="text-cyan-400 mt-0.5 flex-shrink-0">▸</span><em>Activities:</em> sow, transplant, foliar feed, irrigate, mow lawns, cut herbs for fresh use</li>
+                </ul>
+                <p class="text-xs text-slate-500 mt-2 italic">
+                  Note: Thun observed that leaf-day crops tend toward higher water content, which can
+                  reduce long-term storage life — a trade-off to weigh for harvest timing.<sup><a href="#ref-2">[2]</a></sup>
+                </p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Cosmic Rationale</p>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Water-element constellations are associated with the promotion of sap
+                  movement and leaf development. Thun documented that plots sown on leaf
+                  days produced lush, abundant vegetative growth — particularly advantageous
+                  for salad crops and fodder grasses.<sup><a href="#ref-2">[2]</a></sup>
+                  Steiner identified water as the mediator of etheric (life) forces in
+                  the plant.<sup><a href="#ref-1">[1]</a></sup>
+                </p>
+              </div>
+              <div class="rounded-xl px-4 py-3 bg-cyan-500/8 border border-cyan-500/15">
+                <p class="text-xs text-cyan-300 italic leading-relaxed">
+                  <strong class="not-italic font-semibold">KosmoGrow synergy:</strong>
+                  Audio-resonance systems playing birdsong or bee-frequency recordings
+                  on leaf days align with documented plant electrophysiological
+                  sensitivity noted by Tompkins &amp; Bird.<sup><a href="#ref-5">[5]</a></sup>
+                  Water-element sacred geometry (spiral patterns) may further harmonise
+                  hydration distribution.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── ROOT DAYS ─── -->
+          <div class="fade-up card-glow root-glow rounded-2xl border border-white/10
+                      hover:border-yellow-500/30 bg-white/5 overflow-hidden
+                      transition-all duration-300">
+            <!-- Header band -->
+            <div class="px-7 py-5 bg-gradient-to-r from-yellow-500/12 to-amber-600/6
+                        border-b border-yellow-500/20">
+              <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl" aria-hidden="true">🌍</span>
+                  <div>
+                    <h3 class="text-xl font-bold text-white">Root Days</h3>
+                    <span class="text-xs text-yellow-400 font-medium uppercase tracking-wider">Earth Element</span>
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-1.5" aria-label="Moon in sidereal constellations">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-300 border border-yellow-500/25">Taurus</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-300 border border-yellow-500/25">Virgo</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-300 border border-yellow-500/25">Capricorn</span>
+                </div>
+              </div>
+            </div>
+            <div class="px-7 py-6 space-y-5">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Best Crops &amp; Activities</p>
+                <ul class="space-y-1 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-yellow-400 mt-0.5 flex-shrink-0">▸</span>Root vegetables: carrots, parsnips, beetroot, celeriac, radishes, turnips, swedes, salsify, scorzonera</li>
+                  <li class="flex gap-2"><span class="text-yellow-400 mt-0.5 flex-shrink-0">▸</span>Tubers and storage organs: potatoes, Jerusalem artichokes, sweet potatoes (managed as root crop)</li>
+                  <li class="flex gap-2"><span class="text-yellow-400 mt-0.5 flex-shrink-0">▸</span>Alliums: onions, garlic, shallots, leeks planted for storage</li>
+                  <li class="flex gap-2"><span class="text-yellow-400 mt-0.5 flex-shrink-0">▸</span>Root herbs: valerian, ginger, turmeric, horseradish</li>
+                  <li class="flex gap-2"><span class="text-yellow-400 mt-0.5 flex-shrink-0">▸</span><em>Activities:</em> sow, plant, cultivate and hoe soil, harvest root crops (best dry matter and storage life), apply horn manure (BD 500) preparation, turn compost</li>
+                </ul>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Cosmic Rationale</p>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Earth-element constellations direct plant-building forces downward into
+                  storage organs. Thun's field trials documented improved root development
+                  and higher dry-matter content — both commercially and nutritionally
+                  significant — in root crops sown during these
+                  periods.<sup><a href="#ref-2">[2]</a></sup> Steiner identified the root
+                  as the primary site of cosmic-force reception from the Earth's own
+                  magnetic and mineral
+                  environment.<sup><a href="#ref-1">[1]</a></sup>
+                </p>
+              </div>
+              <div class="rounded-xl px-4 py-3 bg-yellow-500/8 border border-yellow-500/15">
+                <p class="text-xs text-yellow-200 italic leading-relaxed">
+                  <strong class="not-italic font-semibold">KosmoGrow synergy:</strong>
+                  Magnetoculture devices applied near root zones on root days work with the
+                  grounding Earth forces to stabilise root meristem development — the same
+                  meristems shown to be vulnerable during geomagnetic
+                  storms.<sup><a href="#ref-4">[4]</a></sup> Biochar top-dressing on root
+                  days leverages the improved soil-mineral uptake potential of Earth-element
+                  conditions.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── FLOWER DAYS ─── -->
+          <div class="fade-up delay-150 card-glow flower-glow rounded-2xl border border-white/10
+                      hover:border-violet-500/30 bg-white/5 overflow-hidden
+                      transition-all duration-300">
+            <!-- Header band -->
+            <div class="px-7 py-5 bg-gradient-to-r from-violet-500/12 to-purple-500/6
+                        border-b border-violet-500/20">
+              <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl" aria-hidden="true">🌬️</span>
+                  <div>
+                    <h3 class="text-xl font-bold text-white">Flower Days</h3>
+                    <span class="text-xs text-violet-400 font-medium uppercase tracking-wider">Air / Light Element</span>
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-1.5" aria-label="Moon in sidereal constellations">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-500/15 text-violet-300 border border-violet-500/25">Gemini</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-500/15 text-violet-300 border border-violet-500/25">Libra</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-500/15 text-violet-300 border border-violet-500/25">Aquarius</span>
+                </div>
+              </div>
+            </div>
+            <div class="px-7 py-6 space-y-5">
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Best Crops &amp; Activities</p>
+                <ul class="space-y-1 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-violet-400 mt-0.5 flex-shrink-0">▸</span>Ornamental flowers: marigolds, sunflowers, roses, lavender, chamomile, echinacea, calendula, borage, nasturtium</li>
+                  <li class="flex gap-2"><span class="text-violet-400 mt-0.5 flex-shrink-0">▸</span>Vegetables harvested as flower heads: broccoli (florets), cauliflower (florets), globe artichokes</li>
+                  <li class="flex gap-2"><span class="text-violet-400 mt-0.5 flex-shrink-0">▸</span>Flowering herbs: thyme, rosemary, and oregano harvested at or near bloom</li>
+                  <li class="flex gap-2"><span class="text-violet-400 mt-0.5 flex-shrink-0">▸</span>Pollinator support species; seed-saving for flowering species</li>
+                  <li class="flex gap-2"><span class="text-violet-400 mt-0.5 flex-shrink-0">▸</span><em>Activities:</em> sow, transplant, deadhead, spray biodynamic preparations (especially horn silica BD 501 for aerial stimulation), encourage pollination, cut flowers (best vase life and fragrance)</li>
+                </ul>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Cosmic Rationale</p>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Air/light-element forces are associated with the reproductive and aromatic
+                  processes of the plant. Thun observed enhanced fragrance, colour intensity,
+                  and pollen viability in blooms cultivated under these
+                  conditions.<sup><a href="#ref-2">[2]</a></sup> Biodynamic preparations
+                  applied on flower days are widely reported by practitioners to show
+                  heightened effect on the aerial plant environment — a position consistent
+                  with Steiner's framework of elemental forces and plant
+                  organs.<sup><a href="#ref-1">[1]</a></sup>
+                </p>
+              </div>
+              <div class="rounded-xl px-4 py-3 bg-violet-500/8 border border-violet-500/15">
+                <p class="text-xs text-violet-300 italic leading-relaxed">
+                  <strong class="not-italic font-semibold">KosmoGrow synergy:</strong>
+                  Audioculture with bee-frequency recordings on flower days aligns with
+                  documented pollinator-acoustic interactions in flowering plants;
+                  electroculture for pollen viability enhancement is an active area of
+                  practitioner research. Subtle energy patterning (Flower of Life geometry)
+                  is applied here as a working hypothesis pending further field documentation.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end grid -->
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         REST PERIODS
+    ═══════════════════════════════════════════════════════ -->
+    <section id="rest-periods" class="relative py-4 px-4">
+      <div class="max-w-5xl mx-auto fade-up">
+        <div class="flex gap-4 items-start p-6 rounded-2xl
+                    bg-amber-500/8 border border-amber-500/25">
+          <span class="text-2xl mt-0.5 flex-shrink-0" aria-hidden="true">⚠️</span>
+          <div>
+            <h3 class="text-amber-300 font-bold mb-2">Rest Periods Override Any Favourable Day Type</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-3">
+              Thun identified several recurring astronomical events as <strong class="text-slate-200">rest periods</strong>
+              — windows during which germination rates and plant development were consistently
+              poor regardless of which day type was active:<sup><a href="#ref-2">[2]</a></sup>
+            </p>
+            <ul class="space-y-2 text-sm text-slate-400">
+              <li class="flex gap-2">
+                <span class="text-amber-400 mt-0.5 flex-shrink-0">▸</span>
+                <span><strong class="text-slate-200">Lunar nodes</strong> (ascending and descending node crossings, ~12-hour windows): The Moon's orbit intersects the ecliptic at these points. Thun's trials showed significantly depressed germination and erratic growth when plantings coincided with node periods.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-amber-400 mt-0.5 flex-shrink-0">▸</span>
+                <span><strong class="text-slate-200">Lunar perigee</strong> (Moon at closest approach): Gravitational influence is strongest. Practitioner observations report increased pest pressure and erratic development — consistent with elevated tidal bio-mechanical stress on cellular structures.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-amber-400 mt-0.5 flex-shrink-0">▸</span>
+                <span><strong class="text-slate-200">Lunar eclipse periods</strong>: Treated as extended rest periods in the Thun calendar.</span>
+              </li>
+            </ul>
+            <p class="text-slate-500 text-xs mt-3 italic">
+              Practical rule: reserve rest periods for passive garden tasks — observation, mulching, tool maintenance — rather than sowing or transplanting.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         SPACE WEATHER
+    ═══════════════════════════════════════════════════════ -->
+    <section id="space-weather" class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-yellow-950/8 to-transparent
+                  pointer-events-none" aria-hidden="true"></div>
+      <div class="relative max-w-7xl mx-auto">
+
+        <!-- Heading -->
+        <div class="text-center mb-16 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-yellow-500/30 bg-yellow-500/10
+                      text-yellow-400 text-xs font-medium uppercase tracking-wider">
+            Space Weather
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Why Solar Storms Matter <span class="gradient-text">to Your Plants</span>
+          </h2>
+          <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            The Kp (Planetarische Kennziffer) index is published every three hours by the
+            NOAA Space Weather Prediction Center,<sup><a href="#ref-9">[9]</a></sup> using
+            data from a global network of ground-based magnetometers. It measures disturbances
+            in Earth's geomagnetic field on a quasi-logarithmic 0–9 scale, where values of
+            5 and above indicate a geomagnetic storm.
+          </p>
+        </div>
+
+        <!-- Kp Scale Reference -->
+        <div class="fade-up mb-16 max-w-3xl mx-auto">
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
+            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+              <div class="text-emerald-400 font-bold text-lg">0–1</div>
+              <div class="text-slate-400 text-xs mt-1">Very quiet</div>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
+              <div class="text-emerald-400 font-bold text-lg">2–3</div>
+              <div class="text-slate-400 text-xs mt-1">Quiet–unsettled</div>
+            </div>
+            <div class="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+              <div class="text-yellow-400 font-bold text-lg">4</div>
+              <div class="text-slate-400 text-xs mt-1">Active</div>
+            </div>
+            <div class="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
+              <div class="text-orange-400 font-bold text-lg">5–6</div>
+              <div class="text-slate-400 text-xs mt-1">Minor–moderate storm</div>
+            </div>
+            <div class="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+              <div class="text-red-400 font-bold text-lg">7–8</div>
+              <div class="text-slate-400 text-xs mt-1">Strong–severe storm</div>
+            </div>
+            <div class="p-3 rounded-xl bg-red-600/15 border border-red-600/25">
+              <div class="text-red-400 font-bold text-lg">9</div>
+              <div class="text-slate-400 text-xs mt-1">Extreme storm</div>
+            </div>
+          </div>
+          <p class="text-center text-xs text-slate-500 mt-3">Kp scale per NOAA SWPC classification<sup><a href="#ref-9">[9]</a></sup></p>
+        </div>
+
+        <!-- Why plants respond — 4 science tiles -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+
+          <!-- Tile 1 -->
+          <div class="fade-up card-glow p-7 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-yellow-500/25">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/20
+                          flex items-center justify-center text-xl flex-shrink-0">🔬</div>
+              <div>
+                <h3 class="text-white font-bold mb-2">Cellular &amp; Meristem Stress</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                  Plants evolved under a stable geomagnetic field (~25–65 µT, location-dependent).
+                  A peer-reviewed review by Minorsky (2007) documented increases in aberrant cells —
+                  including multinuclear and giant-nuclei variants — in root meristems of
+                  <em>Allium cepa</em> (onion) following geomagnetic storm periods.
+                  Critically, applying geomagnetic shielding reduced these aberration rates,
+                  providing evidence of a direct causal relationship rather than coincidental
+                  correlation.<sup><a href="#ref-4">[4]</a></sup>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tile 2 -->
+          <div class="fade-up delay-150 card-glow p-7 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-yellow-500/25">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/20
+                          flex items-center justify-center text-xl flex-shrink-0">⚡</div>
+              <div>
+                <h3 class="text-white font-bold mb-2">Bioelectric &amp; Ion Homeostasis</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                  Plant growth signalling depends on transmembrane ion gradients — particularly
+                  Ca²⁺ (calcium ions), which function as second messengers in
+                  cell-division and elongation cascades. Variable magnetic fields, such as
+                  those generated during geomagnetic storms, can shift membrane
+                  permeability and alter reactive oxygen species (ROS) production, disrupting
+                  these signalling pathways.<sup><a href="#ref-4">[4]</a></sup>
+                  Root sensitivity to magnetic fields is also documented by Tompkins &amp;
+                  Bird, who characterised roots as natural electromagnetic
+                  receivers.<sup><a href="#ref-5">[5]</a></sup>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tile 3 -->
+          <div class="fade-up card-glow p-7 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-yellow-500/25">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/20
+                          flex items-center justify-center text-xl flex-shrink-0">〰️</div>
+              <div>
+                <h3 class="text-white font-bold mb-2">Resonant Frequency Interference</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                  Geomagnetic storms generate ultra-low-frequency (ULF) and ELF field
+                  pulsations — notably the Pc1 band (0.2–5 Hz) — that fall within
+                  ranges hypothesised to interact with plant biorhythms. Minorsky drew
+                  attention to the possibility that plants may have evolved sensitivity
+                  to these natural field fluctuations as environmental timing
+                  cues.<sup><a href="#ref-4">[4]</a></sup> At storm intensities, the
+                  normally coherent signal becomes energetically noisy and
+                  potentially disruptive — an analogue, in vibrational terms, to the
+                  cymatics principle that coherent frequency patterns support structured
+                  biological organisation.<sup><a href="#ref-8">[8]</a></sup>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tile 4 -->
+          <div class="fade-up delay-150 card-glow p-7 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-yellow-500/25">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/20
+                          flex items-center justify-center text-xl flex-shrink-0">🌐</div>
+              <div>
+                <h3 class="text-white font-bold mb-2">Indirect Atmospheric Effects
+                  <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full
+                               bg-slate-500/20 text-slate-400 border border-slate-500/20">
+                    Working hypothesis
+                  </span>
+                </h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                  Solar energetic particle events are associated with shifts in
+                  atmospheric ionisation and cosmic-ray flux. Long-term agro-meteorological
+                  datasets show negative correlations between periods of elevated solar
+                  activity and yield variability in certain staple crops; however,
+                  these relationships are mediated by many confounding variables (precipitation,
+                  temperature) and should be understood as observed correlations requiring
+                  further mechanistic study — not an established causal
+                  chain.<sup><a href="#ref-5">[5]</a></sup> KosmoStream flags elevated
+                  Kp as a precautionary signal, not a deterministic predictor.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end tiles grid -->
+
+        <!-- Vulnerability note -->
+        <div class="fade-up max-w-3xl mx-auto p-5 rounded-2xl border border-slate-700/60 bg-slate-800/30
+                    flex gap-4 items-start">
+          <span class="text-2xl mt-0.5 flex-shrink-0" aria-hidden="true">🌱</span>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            <strong class="text-white">Most vulnerable: new plantings.</strong>
+            Germination and early root establishment involve rapid, co-ordinated cell division
+            in the root meristem — precisely the stage shown to be disrupted during high-Kp
+            periods.<sup><a href="#ref-4">[4]</a></sup> Established mature plants are more
+            structurally resilient, though heavy root disturbance (transplanting, deep
+            cultivation) during storm conditions is still not recommended.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         KP DECISION MATRIX
+    ═══════════════════════════════════════════════════════ -->
+    <section id="kp-matrix" class="relative py-12 px-4">
+      <div class="max-w-5xl mx-auto">
+
+        <div class="text-center mb-10 fade-up">
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">
+            Kp <span class="gradient-text">Decision Matrix</span>
+          </h2>
+          <p class="text-slate-400 text-sm max-w-xl mx-auto">
+            A practical reference for integrating the live Kp reading from KosmoStream's
+            <strong class="text-slate-200">Current Conditions</strong> screen into your
+            daily garden decisions.
+          </p>
+        </div>
+
+        <div class="fade-up overflow-x-auto rounded-2xl border border-white/10">
+          <table class="kp-table min-w-[640px] w-full">
+            <thead class="bg-white/5">
+              <tr>
+                <th class="rounded-tl-2xl w-20">Kp Level</th>
+                <th>Storm Status</th>
+                <th>New Plantings &amp; Seeds</th>
+                <th>Existing Plants</th>
+                <th class="rounded-tr-2xl">Recommended Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="kp-row-green">
+                <td class="font-bold text-emerald-400">0–3</td>
+                <td>
+                  <span class="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
+                    <span aria-hidden="true">✅</span> Quiet
+                  </span>
+                </td>
+                <td class="text-emerald-300">Optimal — proceed with confidence</td>
+                <td class="text-emerald-300">Full maintenance programme</td>
+                <td>Sow, transplant, foliar feed, prune, apply BD preparations</td>
+              </tr>
+              <tr class="kp-row-yellow">
+                <td class="font-bold text-yellow-400">4</td>
+                <td>
+                  <span class="inline-flex items-center gap-1.5 text-yellow-400 font-medium">
+                    <span aria-hidden="true">⚠️</span> Active
+                  </span>
+                </td>
+                <td class="text-yellow-300">Pause if possible; delay 12–24 h</td>
+                <td class="text-yellow-300">Light maintenance only; avoid deep root work</td>
+                <td>Mulch, surface compost dressing, compost tea (no root disturbance)</td>
+              </tr>
+              <tr class="kp-row-orange">
+                <td class="font-bold text-orange-400">5–6</td>
+                <td>
+                  <span class="inline-flex items-center gap-1.5 text-orange-400 font-medium">
+                    <span aria-hidden="true">❌</span> Minor–Moderate Storm
+                  </span>
+                </td>
+                <td class="text-orange-300">Delay 24–48 h minimum</td>
+                <td class="text-orange-300">Protective measures only</td>
+                <td>Water minimally; apply biochar for soil grounding; observe</td>
+              </tr>
+              <tr class="kp-row-red border-b-0">
+                <td class="font-bold text-red-400 rounded-bl-2xl">7–9</td>
+                <td>
+                  <span class="inline-flex items-center gap-1.5 text-red-400 font-medium">
+                    <span aria-hidden="true">❌</span> Strong–Extreme Storm
+                  </span>
+                </td>
+                <td class="text-red-300">Strongly avoid all new plantings</td>
+                <td class="text-red-300">Minimal intervention only</td>
+                <td class="rounded-br-2xl">Observe, rest, passive ambient-sound support; no cultivation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-center text-xs text-slate-500 mt-3">
+          Storm classifications per NOAA G-scale.<sup><a href="#ref-9">[9]</a></sup>
+          Planting guidance in this table reflects the precautionary extrapolation of Minorsky's
+          meristem findings.<sup><a href="#ref-4">[4]</a></sup>
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         DAILY DECISION FLOW
+    ═══════════════════════════════════════════════════════ -->
+    <section id="decision-flow" class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/12 to-transparent
+                  pointer-events-none" aria-hidden="true"></div>
+      <div class="relative max-w-5xl mx-auto">
+
+        <!-- Heading -->
+        <div class="text-center mb-16 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Integrated Decision Framework
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Reading the <span class="gradient-text">Full Cosmic Picture</span>
+          </h2>
+          <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+            KosmoStream integrates three independent data streams into a single coherent
+            daily signal. Any caution flag overrides an otherwise favourable combination —
+            the system is designed to be conservative, because avoiding a poor planting
+            window costs nothing while recovering from avoidable transplant losses does.
+          </p>
+        </div>
+
+        <!-- 4-step flow -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+
+          <!-- Step 1 -->
+          <div class="fade-up flex flex-col items-center md:items-start text-center md:text-left relative">
+            <div class="hidden md:block absolute top-5 left-[calc(50%+28px)] right-[calc(-50%+28px)]
+                        h-0.5 bg-gradient-to-r from-emerald-500/60 to-emerald-500/10"
+                 aria-hidden="true"></div>
+            <div class="w-10 h-10 rounded-full bg-emerald-500 text-black font-bold text-sm
+                        flex items-center justify-center mb-4 flex-shrink-0 z-10
+                        shadow-lg shadow-emerald-500/30">1</div>
+            <h3 class="text-base font-bold text-white mb-1">Check Day Type</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Open <strong class="text-slate-200">Biodynamic Outlook</strong> or
+              <strong class="text-slate-200">Enhanced Almanac</strong>. Identify today's
+              day type (Fruit / Leaf / Root / Flower) and whether any rest period
+              is active.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="fade-up delay-75 flex flex-col items-center md:items-start text-center md:text-left relative">
+            <div class="hidden md:block absolute top-5 left-[calc(50%+28px)] right-[calc(-50%+28px)]
+                        h-0.5 bg-gradient-to-r from-emerald-500/60 to-emerald-500/10"
+                 aria-hidden="true"></div>
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 border-2 border-emerald-500
+                        text-emerald-400 font-bold text-sm
+                        flex items-center justify-center mb-4 flex-shrink-0 z-10">2</div>
+            <h3 class="text-base font-bold text-white mb-1">Read the Kp</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Check <strong class="text-slate-200">Current Conditions</strong> for the
+              live Kp index. If Kp ≥ 5, new plantings and root work should be
+              deferred regardless of day type.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="fade-up delay-150 flex flex-col items-center md:items-start text-center md:text-left relative">
+            <div class="hidden md:block absolute top-5 left-[calc(50%+28px)] right-[calc(-50%+28px)]
+                        h-0.5 bg-gradient-to-r from-emerald-500/60 to-emerald-500/10"
+                 aria-hidden="true"></div>
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 border-2 border-emerald-500
+                        text-emerald-400 font-bold text-sm
+                        flex items-center justify-center mb-4 flex-shrink-0 z-10">3</div>
+            <h3 class="text-base font-bold text-white mb-1">Check Local Conditions</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Still in <strong class="text-slate-200">Current Conditions</strong>:
+              review temperature, precipitation, and humidity. Extreme heat, pending
+              frost, or waterlogged soil override celestial timing just as firmly.
+            </p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="fade-up delay-225 flex flex-col items-center md:items-start text-center md:text-left">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 border-2 border-emerald-500
+                        text-emerald-400 font-bold text-sm
+                        flex items-center justify-center mb-4 flex-shrink-0">4</div>
+            <h3 class="text-base font-bold text-white mb-1">Act — or Pause</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              All three signals green? Plant with confidence. Any amber flag?
+              Limit to light maintenance. Any red flag? Observe and prepare.
+              Use <strong class="text-slate-200">Planting Outlook</strong> to
+              identify the next clear window.
+            </p>
+          </div>
+
+        </div><!-- end steps -->
+
+        <!-- Screen mapping table -->
+        <div class="fade-up overflow-x-auto rounded-2xl border border-white/10">
+          <table class="kp-table min-w-[560px] w-full">
+            <thead class="bg-white/5">
+              <tr>
+                <th class="rounded-tl-2xl">KosmoStream Screen</th>
+                <th>Data Signal</th>
+                <th class="rounded-tr-2xl">When to Use It</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-white font-medium">Current Conditions</td>
+                <td>Live Kp index · Moon phase · Local weather</td>
+                <td>Before any garden task — the daily go/no-go check</td>
+              </tr>
+              <tr>
+                <td class="text-white font-medium">Planting Outlook</td>
+                <td>Day-by-day biodynamic + weather integration</td>
+                <td>Plan tasks for today; find the next optimal window</td>
+              </tr>
+              <tr>
+                <td class="text-white font-medium">Extended Planting Outlook</td>
+                <td>7-day forward biodynamic + space weather view</td>
+                <td>Schedule major work (transplanting, seed-saving) a week ahead</td>
+              </tr>
+              <tr>
+                <td class="text-white font-medium">Biodynamic Outlook</td>
+                <td>Day type · Rest periods · Lunar phase</td>
+                <td>Identify which crop category is favoured and any overriding rest periods</td>
+              </tr>
+              <tr>
+                <td class="text-white font-medium border-b-0 rounded-bl-2xl">Enhanced Almanac</td>
+                <td class="border-b-0">Full moon-phase calendar + biodynamic notes</td>
+                <td class="border-b-0 rounded-br-2xl">Month-level planning; align with the broader seasonal rhythm</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-center text-xs text-slate-500 mt-4">
+          All screens update in real time. The full cosmic check takes under 60 seconds.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         CTA STRIP
+    ═══════════════════════════════════════════════════════ -->
+    <section class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px]
+                    rounded-full bg-emerald-500/8 blur-3xl"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-950/20 via-transparent to-emerald-950/10"></div>
+      </div>
+
+      <div class="relative max-w-3xl mx-auto text-center fade-up">
+        <div class="p-px rounded-3xl bg-gradient-to-b from-emerald-500/40 via-emerald-500/10 to-transparent">
+          <div class="px-8 sm:px-16 py-14 rounded-3xl bg-[#060610]/95 border border-emerald-500/15">
+            <div class="text-5xl mb-5" aria-hidden="true">🌌</div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Ready to grow in cosmic harmony?
+            </h2>
+            <p class="text-slate-400 leading-relaxed mb-8 max-w-xl mx-auto">
+              Put this science into practice. KosmoStream is live, free, and works
+              on any device — no account required.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                        px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                        text-black font-semibold text-base transition-all duration-200
+                        shadow-lg shadow-emerald-500/25 hover:-translate-y-0.5">
+                Launch KosmoStream Now ↗
+              </a>
+              <a href="/kosmostream-features.html"
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                        px-8 py-3.5 rounded-xl border border-white/20
+                        text-slate-300 hover:text-white hover:border-white/40
+                        font-medium text-base transition-all duration-200 hover:-translate-y-0.5">
+                ← Back to Features
+              </a>
+            </div>
+            <p class="text-slate-600 text-xs mt-6">
+              <a href="https://x.com/KosmoGrow" target="_blank" rel="noopener noreferrer"
+                 class="hover:text-emerald-400 transition-colors duration-200">@KosmoGrow on X</a>
+              &nbsp;·&nbsp; kosmophytotrophia.com &nbsp;·&nbsp; kosmogrow.com
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         REFERENCES
+    ═══════════════════════════════════════════════════════ -->
+    <section id="references" class="relative py-16 px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="fade-up border-t border-white/10 pt-12">
+          <h2 class="text-lg font-bold text-white mb-6">References</h2>
+          <ol class="space-y-4 text-sm text-slate-400 list-none">
+
+            <li id="ref-1" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[1]</span>
+              <span>Rudolf Steiner, <em>Agriculture: An Introductory Reader</em>
+                (based on the Agriculture Course, GA 327, delivered June 1924),
+                Steiner Press / Floris Books. The original course lectures were first
+                published in German in 1925.</span>
+            </li>
+
+            <li id="ref-2" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[2]</span>
+              <span>Maria Thun, <em>Biodynamic Sowing and Planting Calendar</em>
+                (annual edition, Floris Books). Thun conducted her sidereal-correlation
+                field trials beginning in the late 1950s; the calendar has been published
+                continuously since 1963. Results from her long-running radish and other
+                crop trials are summarised in: Maria Thun,
+                <em>Results from the Biodynamic Sowing and Planting Calendar</em>,
+                Floris Books, 2nd ed. 2003.</span>
+            </li>
+
+            <li id="ref-3" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[3]</span>
+              <span>Willy Schilthuis, <em>Biodynamic Agriculture</em>,
+                Floris Books, 2003. An accessible synthesis of Steiner's agricultural
+                indications and the biodynamic movement's development to that date.</span>
+            </li>
+
+            <li id="ref-4" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[4]</span>
+              <span>P.V. Minorsky, review of geomagnetic field effects on plant
+                development, <em>Journal of Atmospheric and Solar-Terrestrial
+                Physics</em> (2007). Documents elevated aberrant-cell rates in
+                <em>Allium cepa</em> root meristems correlated with post-storm
+                geomagnetic activity, with shielding experiments supporting a
+                causal interpretation.</span>
+            </li>
+
+            <li id="ref-5" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[5]</span>
+              <span>Peter Tompkins &amp; Christopher Bird,
+                <em>The Secret Life of Plants</em>, Harper &amp; Row, 1973.
+                A survey of experimental and anecdotal evidence for plant
+                electrophysiological sensitivity, including root responses
+                to magnetic and electromagnetic fields. Not a primary
+                research publication; cited here as a synthesis of the
+                observational literature available at that date.</span>
+            </li>
+
+            <li id="ref-6" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[6]</span>
+              <span>Lynne McTaggart, <em>The Field: The Quest for the Secret
+                Force of the Universe</em>, HarperCollins, 2001.
+                A popular-science synthesis drawing on frontier physics research
+                including zero-point field theory and biological field experiments.
+                Not a primary research publication; cited as contextual background
+                for the subtle-field framework.</span>
+            </li>
+
+            <li id="ref-7" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[7]</span>
+              <span>Richard Gerber, <em>Vibrational Medicine</em>,
+                Bear &amp; Company, 3rd ed., 2001. Reviews subtle-energy and
+                biofield concepts in relation to living systems; cited for
+                context on liquid-phase sensitivity to energetic fields
+                (Vinter's Outlook rationale).</span>
+            </li>
+
+            <li id="ref-8" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[8]</span>
+              <span>Hans Jenny, <em>Cymatics: A Study of Wave Phenomena and
+                Vibration</em>, Macromedia Press, 2001 (originally published
+                in German as <em>Kymatik</em>, vol. 1, 1967; vol. 2, 1974).
+                Empirical documentation of standing-wave patterns produced
+                by coherent frequency inputs in physical media; cited as the
+                basis for the vibrational-frequency rationale in KosmoGrow
+                synergy notes.</span>
+            </li>
+
+            <li id="ref-9" class="flex gap-3">
+              <span class="text-emerald-400 font-bold flex-shrink-0">[9]</span>
+              <span>NOAA Space Weather Prediction Center (SWPC), Geomagnetic
+                Kp Index and G-Scale storm classifications. Public-domain
+                operational data; continuously updated at
+                <a href="https://www.swpc.noaa.gov" target="_blank" rel="noopener noreferrer"
+                   class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+                  swpc.noaa.gov</a>.
+                KosmoStream's Kp data is sourced from this feed.</span>
+            </li>
+
+          </ol>
+          <p class="text-xs text-slate-500 mt-8 italic">
+            Claims labelled "working hypothesis" or "observed in practice" in this guide
+            reflect areas where practitioner experience is the primary evidence base and
+            peer-reviewed mechanistic studies remain limited. KosmoGrow welcomes
+            field-trial data from the community to help build that evidence base.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ░░░ FOOTER ░░░ -->
+  <footer class="above-canvas border-t border-white/10 bg-[#060610]/80 backdrop-blur-md pt-16 pb-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <!-- Col 1 -->
+        <div>
+          <a href="/" class="inline-flex items-center gap-2 text-xl font-bold text-white mb-3
+                             hover:text-emerald-400 transition-colors duration-200">
+            KosmoGrow <span aria-hidden="true">🌌🌿</span>
+          </a>
+          <p class="text-slate-400 text-sm leading-relaxed mt-2">
+            Cosmic Agriculture, Grounded in Results. Aligning biodynamic wisdom
+            with the precision of modern data science.
+          </p>
+          <div class="flex items-center gap-2 mt-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+            <span class="text-xs text-emerald-400 font-medium">KosmoStream is live</span>
+          </div>
+        </div>
+
+        <!-- Col 2 -->
+        <div>
+          <h4 class="text-white font-semibold mb-5 text-xs uppercase tracking-wider">Navigation</h4>
+          <ul class="space-y-3">
+            <li><a href="/" class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Home</a></li>
+            <li><a href="/#about" class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">About</a></li>
+            <li><a href="/#services" class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Services</a></li>
+            <li><a href="/kosmostream-features.html" class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">KosmoStream Features</a></li>
+            <li><a href="/kosmostream-guide.html" class="text-emerald-400 text-sm transition-colors duration-200">Science Guide</a></li>
+            <li><a href="/KosmoStream" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 text-sm transition-colors duration-200">KosmoStream Live ↗</a></li>
+            <li><a href="/#contact" class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3 -->
+        <div>
+          <h4 class="text-white font-semibold mb-5 text-xs uppercase tracking-wider">Connect</h4>
+          <p class="text-slate-400 text-sm mb-5">
+            Follow our cosmic journey and join a growing community of biodynamic growers.
+          </p>
+          <ul class="space-y-3">
+            <li>
+              <a href="https://x.com/KosmoGrow" target="_blank" rel="noopener noreferrer"
+                 aria-label="X / Twitter (@KosmoGrow)"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401
+                           6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161
+                           17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+                </svg>
+                @KosmoGrow
+              </a>
+            </li>
+            <li>
+              <a href="/#contact"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0
+                           00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                hello@kosmogrow.com
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center
+                  justify-between gap-4 text-xs text-slate-500">
+        <p>© 2026 KosmoGrow. All rights reserved. Grown with 🌌 and 🌿.</p>
+        <div class="flex items-center gap-5">
+          <a href="#" class="hover:text-emerald-400 transition-colors duration-200">Privacy Policy</a>
+          <a href="#" class="hover:text-emerald-400 transition-colors duration-200">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ░░░ SCRIPTS ░░░ -->
+  <script>
+  /* ============================================================
+     1. STAR FIELD CANVAS
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById('starfield');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var NUM = 160;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function makeStar() {
+      return {
+        x:     Math.random() * canvas.width,
+        y:     Math.random() * canvas.height,
+        r:     Math.random() * 1.1 + 0.2,
+        base:  Math.random() * 0.55 + 0.15,
+        speed: Math.random() * 0.6 + 0.2,
+        phase: Math.random() * Math.PI * 2
+      };
+    }
+
+    function init() {
+      stars = [];
+      for (var i = 0; i < NUM; i++) stars.push(makeStar());
+    }
+
+    var last = Date.now();
+    function draw() {
+      var now = Date.now();
+      var dt  = Math.min((now - last) / 1000, 0.1);
+      last = now;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.phase += s.speed * dt;
+        var alpha = s.base * (0.5 + 0.5 * Math.sin(s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { resize(); init(); }, 200);
+    });
+
+    resize();
+    init();
+
+    if (window.requestAnimationFrame) {
+      draw();
+    } else {
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + s.base.toFixed(3) + ')';
+        ctx.fill();
+      }
+    }
+  }());
+
+  /* ============================================================
+     2. HAMBURGER MENU
+     ============================================================ */
+  (function () {
+    var btn       = document.getElementById('menu-btn');
+    var menu      = document.getElementById('mobile-menu');
+    var iconOpen  = document.getElementById('icon-open');
+    var iconClose = document.getElementById('icon-close');
+    if (!btn || !menu) return;
+
+    var open = false;
+
+    function setOpen(state) {
+      open = state;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        menu.classList.add('open');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+      } else {
+        menu.classList.remove('open');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      }
+    }
+
+    btn.addEventListener('click', function () { setOpen(!open); });
+
+    var links = menu.querySelectorAll('a');
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', function () { setOpen(false); });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (open && !btn.contains(e.target) && !menu.contains(e.target)) {
+        setOpen(false);
+      }
+    });
+  }());
+
+  /* ============================================================
+     3. SCROLL-REVEAL
+     ============================================================ */
+  (function () {
+    var els = document.querySelectorAll('.fade-up');
+    if (!els.length) return;
+
+    if (!('IntersectionObserver' in window) ||
+        !('IntersectionObserverEntry' in window)) {
+      for (var i = 0; i < els.length; i++) {
+        els[i].classList.add('visible');
+      }
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var j = 0; j < entries.length; j++) {
+        if (entries[j].isIntersecting) {
+          entries[j].target.classList.add('visible');
+          observer.unobserve(entries[j].target);
+        }
+      }
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    for (var i = 0; i < els.length; i++) {
+      observer.observe(els[i]);
+    }
+  }());
+  </script>
+
+</body>
+</html>
