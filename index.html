@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KosmoGrow — Cosmic Agriculture, Grounded in Results</title>
+  <meta name="description" content="KosmoGrow harnesses biodynamic wisdom and real-time planetary data to help you grow smarter. Explore our services and the KosmoStream platform." />
+  <link rel="canonical" href="https://kosmogrow.com/" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://kosmogrow.com/" />
+  <meta property="og:title" content="KosmoGrow — Cosmic Agriculture, Grounded in Results" />
+  <meta property="og:description" content="Where ancient biodynamic wisdom meets real-time planetary data. Grow smarter, harvest more." />
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS CDN (Play CDN — JIT, no build step) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ─── Base ─────────────────────────────────── */
+    body {
+      background-color: #060610;
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── Star canvas ───────────────────────────── */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── Content sits above canvas ─────────────── */
+    .above-canvas { position: relative; z-index: 1; }
+
+    /* ─── Gradient text ─────────────────────────── */
+    .gradient-text {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #6ee7b7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── Scroll-reveal fade-up ─────────────────── */
+    .fade-up {
+      opacity: 0;
+      -webkit-transform: translateY(28px);
+              transform: translateY(28px);
+      will-change: transform;
+      -webkit-transition: opacity 0.55s ease, -webkit-transform 0.55s ease;
+              transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      -webkit-transform: translateY(0);
+              transform: translateY(0);
+    }
+    /* Stagger helpers */
+    .delay-100 { -webkit-transition-delay: 100ms; transition-delay: 100ms; }
+    .delay-200 { -webkit-transition-delay: 200ms; transition-delay: 200ms; }
+    .delay-300 { -webkit-transition-delay: 300ms; transition-delay: 300ms; }
+
+    /* ─── Mobile nav max-height toggle ─────────── */
+    #mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      -webkit-transition: max-height 0.3s ease;
+              transition: max-height 0.3s ease;
+    }
+    #mobile-menu.open { max-height: 480px; }
+
+    /* ─── Card hover glow ───────────────────────── */
+    .card-glow {
+      -webkit-transition: border-color 0.3s ease, box-shadow 0.3s ease, -webkit-transform 0.2s ease;
+              transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    .card-glow:hover {
+      box-shadow: 0 0 28px rgba(52,211,153,0.12), 0 0 56px rgba(52,211,153,0.06);
+      -webkit-transform: translateY(-2px);
+              transform: translateY(-2px);
+    }
+
+    /* ─── Formspree state helpers ───────────────── */
+    [data-fs-error]:empty { display: none; }
+
+    /* ─── Custom scrollbar ──────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #060610; }
+    ::-webkit-scrollbar-thumb { background: #34d399; border-radius: 3px; }
+  </style>
+
+  <!-- No-JS fallbacks -->
+  <noscript>
+    <style>
+      #mobile-menu { max-height: none !important; }
+      .fade-up { opacity: 1 !important; -webkit-transform: none !important; transform: none !important; }
+    </style>
+  </noscript>
+</head>
+
+<body class="text-slate-100 antialiased">
+
+  <!-- Skip to main content (accessibility) -->
+  <a href="#main-content"
+     class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50
+            focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-black focus:rounded-lg focus:font-semibold">
+    Skip to content
+  </a>
+
+  <!-- ░░░ STAR FIELD CANVAS ░░░ -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <!-- ░░░ NAVIGATION ░░░ -->
+  <header class="above-canvas sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-[#060610]/80">
+    <nav role="navigation" aria-label="Main navigation" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 text-xl font-bold text-white
+                           hover:text-emerald-400 transition-colors duration-200">
+          KosmoGrow <span aria-hidden="true">🌌🌿</span>
+        </a>
+
+        <!-- Desktop links -->
+        <div class="hidden md:flex items-center gap-1">
+          <a href="/"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Home</a>
+          <a href="#about"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">About</a>
+          <a href="#services"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Services</a>
+          <a href="/kosmostream-features.html"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">KosmoStream Features</a>
+          <a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+             class="px-3 py-2 text-sm font-medium text-emerald-400 hover:text-emerald-300
+                    rounded-lg hover:bg-emerald-500/10 transition-all duration-200">
+            KosmoStream Live ↗
+          </a>
+          <a href="#contact"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Contact</a>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button id="menu-btn"
+                aria-label="Toggle mobile menu"
+                aria-expanded="false"
+                aria-controls="mobile-menu"
+                class="md:hidden p-2 rounded-lg text-slate-300 hover:text-emerald-400
+                       hover:bg-white/5 transition-all duration-200">
+          <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile menu panel -->
+      <div id="mobile-menu" role="menu" aria-label="Mobile navigation">
+        <div class="py-3 border-t border-white/10 space-y-1">
+          <a href="/" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Home</a>
+          <a href="#about" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">About</a>
+          <a href="#services" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Services</a>
+          <a href="/kosmostream-features.html" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">KosmoStream Features</a>
+          <a href="/KosmoStream" target="_blank" rel="noopener noreferrer" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-emerald-400 hover:text-emerald-300
+                    hover:bg-emerald-500/10 rounded-lg transition-all duration-200">
+            KosmoStream Live ↗
+          </a>
+          <a href="#contact" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Contact</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="above-canvas">
+
+    <!-- ░░░ HERO ░░░ -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20">
+      <!-- Nebula blobs -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute top-1/4 left-1/4 w-[480px] h-[480px] rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[360px] h-[360px] rounded-full bg-emerald-700/8  blur-3xl"></div>
+        <div class="absolute top-1/2  left-1/2  w-[700px] h-[700px] rounded-full bg-emerald-900/10 blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      </div>
+
+      <div class="relative text-center max-w-4xl mx-auto">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full
+                    border border-emerald-500/30 bg-emerald-500/10
+                    text-emerald-400 text-sm font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+          Cosmic Agriculture Platform
+        </div>
+
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 leading-none">
+          <span class="text-white">KosmoGrow</span>
+          <span class="text-4xl sm:text-5xl ml-2 align-middle" aria-hidden="true">🌌🌿</span>
+        </h1>
+
+        <p class="text-2xl sm:text-3xl font-light text-slate-300 mb-4">
+          Cosmic Agriculture,
+          <span class="text-emerald-400 font-semibold">Grounded in Results</span>
+        </p>
+
+        <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Where ancient biodynamic wisdom meets real-time planetary data.
+          Grow smarter, harvest more, and tap into the rhythms of the cosmos.
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#services"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                    text-black font-semibold text-base
+                    shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/30
+                    -webkit-transition: background-color 0.2s ease, transform 0.2s ease;
+                    transition: background-color 0.2s ease, transform 0.2s ease;
+                    hover:-translate-y-0.5">
+            Explore Services
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </a>
+          <a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl border border-emerald-500/50
+                    text-emerald-400 hover:bg-emerald-500/10
+                    font-semibold text-base transition-all duration-200 hover:-translate-y-0.5">
+            Visit KosmoStream ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2
+                  text-slate-500 text-xs" aria-hidden="true">
+        <span class="uppercase tracking-widest text-[10px]">Scroll</span>
+        <div class="w-px h-8 bg-gradient-to-b from-slate-500 to-transparent animate-pulse"></div>
+      </div>
+    </section>
+
+    <!-- ░░░ ABOUT ░░░ -->
+    <section id="about" class="relative py-24 px-4">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+        <!-- Text -->
+        <div class="fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            About KosmoGrow
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight">
+            Growing in harmony<br/>with <span class="gradient-text">the cosmos</span>
+          </h2>
+          <p class="text-slate-400 leading-relaxed mb-5">
+            KosmoGrow bridges the gap between ancient agricultural wisdom and
+            cutting-edge data science. Our platform empowers farmers, gardeners,
+            and growers to align their practices with planetary rhythms —
+            yielding healthier crops, richer soil, and more sustainable harvests.
+          </p>
+          <p class="text-slate-400 leading-relaxed mb-8">
+            Founded on biodynamic principles, we believe the cosmos is not
+            separate from the soil. By tuning into lunar cycles, planetary
+            alignments, and seasonal flows, we unlock nature's own operating
+            system — and put it in your hands.
+          </p>
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="text-3xl font-bold text-emerald-400 mb-1">12K+</div>
+              <div class="text-[11px] text-slate-400 uppercase tracking-wider">Active Growers</div>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="text-3xl font-bold text-emerald-400 mb-1">98%</div>
+              <div class="text-[11px] text-slate-400 uppercase tracking-wider">Satisfaction</div>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="text-3xl font-bold text-emerald-400 mb-1">40+</div>
+              <div class="text-[11px] text-slate-400 uppercase tracking-wider">Countries</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual cards -->
+        <div class="fade-up delay-200 grid grid-cols-2 gap-4">
+          <div class="col-span-2 p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 card-glow">
+            <div class="text-3xl mb-3" aria-hidden="true">🌱</div>
+            <h3 class="text-white font-semibold mb-2">Biodynamic First</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Every recommendation is grounded in biodynamic science,
+              tuned to lunar cycles and planetary influence.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10 card-glow">
+            <div class="text-3xl mb-3" aria-hidden="true">🔭</div>
+            <h3 class="text-white font-semibold mb-2">Real-Time Data</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Live planetary feeds and cosmic weather streams, updated continuously.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10 card-glow">
+            <div class="text-3xl mb-3" aria-hidden="true">🌿</div>
+            <h3 class="text-white font-semibold mb-2">Proven Results</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Growers report 20–35% better yields and improved soil health scores.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ SERVICES ░░░ -->
+    <section id="services" class="relative py-24 px-4 overflow-hidden">
+      <!-- Section tint -->
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/10 to-transparent
+                  pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative max-w-7xl mx-auto">
+        <!-- Heading -->
+        <div class="text-center mb-16 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Our Services
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Everything you need to grow <span class="gradient-text">cosmically</span>
+          </h2>
+          <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+            From personalized biodynamic consulting to our flagship KosmoStream
+            platform, we have the tools to elevate your growing practice.
+          </p>
+        </div>
+
+        <!-- Cards grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Card 1 -->
+          <div class="fade-up card-glow group p-8 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-emerald-500/30">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20
+                        flex items-center justify-center text-2xl mb-5
+                        group-hover:scale-110 transition-transform duration-200">🌙</div>
+            <h3 class="text-xl font-bold text-white mb-3">Biodynamic Consulting</h3>
+            <p class="text-slate-400 leading-relaxed mb-5 text-sm">
+              One-on-one guidance from certified biodynamic consultants who help you
+              align every planting, tending, and harvesting cycle with lunar and
+              planetary rhythms.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-400">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Personalized growing plans
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Seasonal scheduling
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Soil health assessment
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="fade-up delay-100 card-glow group p-8 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-emerald-500/30">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20
+                        flex items-center justify-center text-2xl mb-5
+                        group-hover:scale-110 transition-transform duration-200">📅</div>
+            <h3 class="text-xl font-bold text-white mb-3">Cosmic Scheduling</h3>
+            <p class="text-slate-400 leading-relaxed mb-5 text-sm">
+              Automated calendar generation that maps every planting, watering, and
+              harvesting task to the optimal cosmic window for maximum plant vitality.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-400">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Lunar phase tracking
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Planetary aspect alerts
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Custom crop calendars
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="fade-up card-glow group p-8 rounded-2xl bg-white/5 border border-white/10
+                      hover:border-emerald-500/30">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20
+                        flex items-center justify-center text-2xl mb-5
+                        group-hover:scale-110 transition-transform duration-200">📊</div>
+            <h3 class="text-xl font-bold text-white mb-3">Precision Data Analytics</h3>
+            <p class="text-slate-400 leading-relaxed mb-5 text-sm">
+              Deep-dive analytics combining historical cosmic event data with your
+              harvest records to reveal patterns and optimise future growing seasons.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-400">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Yield trend analysis
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Cosmic correlation reports
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Exportable insights
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 4 — Featured -->
+          <div class="fade-up delay-100 card-glow group relative p-8 rounded-2xl
+                      bg-emerald-950/40 border border-emerald-500/25 hover:border-emerald-500/50
+                      overflow-hidden">
+            <div class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full text-xs font-bold
+                        bg-emerald-500 text-black">Featured</div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30
+                        flex items-center justify-center text-2xl mb-5
+                        group-hover:scale-110 transition-transform duration-200">🚀</div>
+            <h3 class="text-xl font-bold text-white mb-3">KosmoStream Platform</h3>
+            <p class="text-slate-400 leading-relaxed mb-5 text-sm">
+              Our flagship interactive biodynamic almanac — a living, breathing platform
+              powered by real-time cosmic data, lunar maps, and community almanac sharing.
+              Built for serious growers.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-400">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Real-time biodynamic calendar
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Community almanac sharing
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Mobile daily insights
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ KOSMOSTREAM TEASER ░░░ -->
+    <section class="relative py-24 px-4 overflow-hidden">
+      <!-- Background gradient strip -->
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px]
+                    rounded-full bg-emerald-500/6 blur-3xl"></div>
+      </div>
+
+      <div class="relative max-w-4xl mx-auto text-center fade-up">
+        <!-- Glowing border card -->
+        <div class="p-px rounded-3xl bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent">
+          <div class="px-8 sm:px-14 py-12 sm:py-16 rounded-3xl bg-[#060610]/95
+                      border border-emerald-500/15">
+            <div class="text-5xl mb-5" aria-hidden="true">🌌</div>
+            <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                        border border-emerald-500/30 bg-emerald-500/10
+                        text-emerald-400 text-xs font-medium uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+              Now Live — KosmoStream
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Your cosmic growth companion
+            </h2>
+            <p class="text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
+              KosmoStream is our interactive biodynamic almanac — a living platform
+              that merges real-time planetary data, lunar influence maps, and
+              personalised crop recommendations into a single, beautiful interface.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href="/kosmostream-features.html"
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                        px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                        text-black font-semibold text-base transition-all duration-200
+                        shadow-lg shadow-emerald-500/25 hover:-translate-y-0.5">
+                Explore Features
+              </a>
+              <a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                        px-8 py-3.5 rounded-xl border border-emerald-500/50
+                        text-emerald-400 hover:bg-emerald-500/10
+                        font-semibold text-base transition-all duration-200 hover:-translate-y-0.5">
+                Open KosmoStream ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ CONTACT ░░░ -->
+    <section id="contact" class="relative py-24 px-4">
+      <div class="max-w-2xl mx-auto">
+
+        <!-- Heading -->
+        <div class="text-center mb-12 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Get in Touch
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Let's grow <span class="gradient-text">together</span>
+          </h2>
+          <p class="text-slate-400 text-sm sm:text-base">
+            Have a question or want to work with us? Drop a message and we'll
+            respond within one cosmic cycle (24 hours).
+          </p>
+        </div>
+
+        <!-- Formspree: form-level success / error banners -->
+        <div data-fs-success style="display:none"
+             class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30
+                    text-emerald-400 text-center font-medium text-sm">
+          🌱 Message sent! We'll be in touch within 24 hours.
+        </div>
+        <div data-fs-error style="display:none"
+             class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30
+                    text-red-400 text-center text-sm font-medium"></div>
+
+        <!-- Form card -->
+        <div class="fade-up delay-100 p-8 rounded-2xl bg-white/5 border border-white/10">
+          <form id="contact-form" novalidate>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+              <!-- Name -->
+              <div>
+                <label for="contact-name" class="block text-sm font-medium text-slate-300 mb-2">
+                  Name <span class="text-emerald-500" aria-hidden="true">*</span>
+                </label>
+                <input type="text" id="contact-name" name="name" required
+                       placeholder="Jane Doe"
+                       data-fs-field
+                       class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+                              text-slate-100 placeholder-slate-500 text-sm
+                              focus:outline-none focus:border-emerald-500/50
+                              focus:ring-1 focus:ring-emerald-500/30
+                              transition-colors duration-200
+                              aria-[invalid=true]:border-red-500/50" />
+                <span data-fs-error="name" class="text-xs text-red-400 mt-1 block"
+                      aria-live="polite"></span>
+              </div>
+              <!-- Email -->
+              <div>
+                <label for="contact-email" class="block text-sm font-medium text-slate-300 mb-2">
+                  Email <span class="text-emerald-500" aria-hidden="true">*</span>
+                </label>
+                <input type="email" id="contact-email" name="email" required
+                       placeholder="jane@example.com"
+                       data-fs-field
+                       class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+                              text-slate-100 placeholder-slate-500 text-sm
+                              focus:outline-none focus:border-emerald-500/50
+                              focus:ring-1 focus:ring-emerald-500/30
+                              transition-colors duration-200" />
+                <span data-fs-error="email" class="text-xs text-red-400 mt-1 block"
+                      aria-live="polite"></span>
+              </div>
+            </div>
+
+            <!-- Subject -->
+            <div class="mb-5">
+              <label for="contact-subject" class="block text-sm font-medium text-slate-300 mb-2">
+                Subject <span class="text-emerald-500" aria-hidden="true">*</span>
+              </label>
+              <input type="text" id="contact-subject" name="subject" required
+                     placeholder="What's on your mind?"
+                     data-fs-field
+                     class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+                            text-slate-100 placeholder-slate-500 text-sm
+                            focus:outline-none focus:border-emerald-500/50
+                            focus:ring-1 focus:ring-emerald-500/30
+                            transition-colors duration-200" />
+              <span data-fs-error="subject" class="text-xs text-red-400 mt-1 block"
+                    aria-live="polite"></span>
+            </div>
+
+            <!-- Message -->
+            <div class="mb-6">
+              <label for="contact-message" class="block text-sm font-medium text-slate-300 mb-2">
+                Message <span class="text-emerald-500" aria-hidden="true">*</span>
+              </label>
+              <textarea id="contact-message" name="message" required rows="5"
+                        placeholder="Tell us about your growing goals..."
+                        data-fs-field
+                        class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+                               text-slate-100 placeholder-slate-500 text-sm
+                               focus:outline-none focus:border-emerald-500/50
+                               focus:ring-1 focus:ring-emerald-500/30
+                               transition-colors duration-200 resize-none"></textarea>
+              <span data-fs-error="message" class="text-xs text-red-400 mt-1 block"
+                    aria-live="polite"></span>
+            </div>
+
+            <button type="submit"
+                    data-fs-submit-btn
+                    class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                           text-black font-semibold text-base transition-all duration-200
+                           shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/30
+                           disabled:opacity-60 disabled:cursor-not-allowed">
+              Send Message
+            </button>
+          </form>
+
+          <p class="text-xs text-slate-500 text-center mt-4">
+            Powered by Formspree · Your data is never sold or shared.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ░░░ FOOTER ░░░ -->
+  <footer class="above-canvas border-t border-white/10 bg-[#060610]/80 backdrop-blur-md pt-16 pb-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- 3-col grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+        <!-- Col 1 -->
+        <div>
+          <a href="/" class="inline-flex items-center gap-2 text-xl font-bold text-white mb-3
+                             hover:text-emerald-400 transition-colors duration-200">
+            KosmoGrow <span aria-hidden="true">🌌🌿</span>
+          </a>
+          <p class="text-slate-400 text-sm leading-relaxed mt-2">
+            Cosmic Agriculture, Grounded in Results. Aligning biodynamic wisdom
+            with the precision of modern data science.
+          </p>
+          <div class="flex items-center gap-2 mt-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+            <span class="text-xs text-emerald-400 font-medium">KosmoStream is live</span>
+          </div>
+        </div>
+
+        <!-- Col 2 -->
+        <div>
+          <h4 class="text-white font-semibold mb-5 text-xs uppercase tracking-wider">Navigation</h4>
+          <ul class="space-y-3">
+            <li><a href="/"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Home</a></li>
+            <li><a href="#about"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">About</a></li>
+            <li><a href="#services"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Services</a></li>
+            <li><a href="/kosmostream-features.html"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">KosmoStream Features</a></li>
+            <li><a href="/KosmoStream" target="_blank" rel="noopener noreferrer"
+                   class="text-emerald-400 hover:text-emerald-300 text-sm transition-colors duration-200">KosmoStream Live ↗</a></li>
+            <li><a href="#contact"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3 -->
+        <div>
+          <h4 class="text-white font-semibold mb-5 text-xs uppercase tracking-wider">Connect</h4>
+          <p class="text-slate-400 text-sm mb-5">
+            Follow our cosmic journey and join a growing community of biodynamic growers.
+          </p>
+          <ul class="space-y-3">
+            <li>
+              <a href="#" aria-label="Twitter / X (@KosmoGrow)"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401
+                           6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161
+                           17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+                </svg>
+                @KosmoGrow
+              </a>
+            </li>
+            <li>
+              <a href="#" aria-label="Instagram (@KosmoGrow)"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919
+                           4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069
+                           4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204
+                           0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849
+                           0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919
+                           1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78
+                           2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072
+                           4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0
+                           3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948
+                           0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0
+                           5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759
+                           6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4
+                           0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796
+                           0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645
+                           1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                @KosmoGrow
+              </a>
+            </li>
+            <li>
+              <a href="#contact"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0
+                           00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                hello@kosmogrow.com
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center
+                  justify-between gap-4 text-xs text-slate-500">
+        <p>© 2026 KosmoGrow. All rights reserved. Grown with 🌌 and 🌿.</p>
+        <div class="flex items-center gap-5">
+          <a href="#" class="hover:text-emerald-400 transition-colors duration-200">Privacy Policy</a>
+          <a href="#" class="hover:text-emerald-400 transition-colors duration-200">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ░░░ SCRIPTS ░░░ -->
+
+  <!-- Formspree @formspree/ajax CDN -->
+  <script>
+    window.formspree = window.formspree || function () {
+      (formspree.q = formspree.q || []).push(arguments);
+    };
+    formspree('initForm', { formElement: '#contact-form', formId: 'xojyebdv' });
+  </script>
+  <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+  <script>
+  /* ============================================================
+     1. STAR FIELD CANVAS
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById('starfield');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var NUM = 160; // lighter on old phones
+    var raf;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function makeStar() {
+      return {
+        x:     Math.random() * canvas.width,
+        y:     Math.random() * canvas.height,
+        r:     Math.random() * 1.1 + 0.2,
+        base:  Math.random() * 0.55 + 0.15,
+        speed: Math.random() * 0.6 + 0.2,
+        phase: Math.random() * Math.PI * 2
+      };
+    }
+
+    function init() {
+      stars = [];
+      for (var i = 0; i < NUM; i++) stars.push(makeStar());
+    }
+
+    var last = Date.now();
+    function draw() {
+      var now = Date.now();
+      var dt  = Math.min((now - last) / 1000, 0.1); // cap dt to avoid jump after tab switch
+      last = now;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.phase += s.speed * dt;
+        var alpha = s.base * (0.5 + 0.5 * Math.sin(s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+        ctx.fill();
+      }
+      raf = requestAnimationFrame(draw);
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { resize(); init(); }, 200);
+    });
+
+    resize();
+    init();
+
+    if (window.requestAnimationFrame) {
+      draw();
+    } else {
+      // Static fallback (very old browsers without rAF)
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + s.base.toFixed(3) + ')';
+        ctx.fill();
+      }
+    }
+  }());
+
+  /* ============================================================
+     2. HAMBURGER MENU
+     ============================================================ */
+  (function () {
+    var btn        = document.getElementById('menu-btn');
+    var menu       = document.getElementById('mobile-menu');
+    var iconOpen   = document.getElementById('icon-open');
+    var iconClose  = document.getElementById('icon-close');
+    if (!btn || !menu) return;
+
+    var open = false;
+
+    function setOpen(state) {
+      open = state;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        menu.classList.add('open');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+      } else {
+        menu.classList.remove('open');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      }
+    }
+
+    btn.addEventListener('click', function () { setOpen(!open); });
+
+    // Close when any link inside the menu is tapped
+    var links = menu.querySelectorAll('a');
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', function () { setOpen(false); });
+    }
+
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+      if (open && !btn.contains(e.target) && !menu.contains(e.target)) {
+        setOpen(false);
+      }
+    });
+  }());
+
+  /* ============================================================
+     3. SCROLL-REVEAL  (IntersectionObserver + older-phone fallback)
+     ============================================================ */
+  (function () {
+    var els = document.querySelectorAll('.fade-up');
+    if (!els.length) return;
+
+    // Fallback: reveal all immediately if browser lacks the API
+    // (covers Android 4.x WebView, old UC Browser, iOS < 12.1, etc.)
+    if (!('IntersectionObserver' in window) ||
+        !('IntersectionObserverEntry' in window)) {
+      for (var i = 0; i < els.length; i++) {
+        els[i].classList.add('visible');
+      }
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var j = 0; j < entries.length; j++) {
+        if (entries[j].isIntersecting) {
+          entries[j].target.classList.add('visible');
+          observer.unobserve(entries[j].target);
+        }
+      }
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    for (var i = 0; i < els.length; i++) {
+      observer.observe(els[i]);
+    }
+  }());
+  </script>
+</body>
+</html>
