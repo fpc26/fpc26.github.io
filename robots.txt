@@ -1,0 +1,32 @@
+# kosmogrow.com marketing pages stay crawlable.
+# The KosmoStream app (and its bundled BD calendar data) is off-limits to crawlers.
+
+User-agent: *
+Disallow: /KosmoStream/
+
+User-agent: GPTBot
+Disallow: /KosmoStream/
+
+User-agent: ChatGPT-User
+Disallow: /KosmoStream/
+
+User-agent: CCBot
+Disallow: /KosmoStream/
+
+User-agent: anthropic-ai
+Disallow: /KosmoStream/
+
+User-agent: ClaudeBot
+Disallow: /KosmoStream/
+
+User-agent: Claude-Web
+Disallow: /KosmoStream/
+
+User-agent: Google-Extended
+Disallow: /KosmoStream/
+
+User-agent: Bytespider
+Disallow: /KosmoStream/
+
+User-agent: PerplexityBot
+Disallow: /KosmoStream/
