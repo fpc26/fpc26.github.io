@@ -1,0 +1,39 @@
+# KosmoGrow
+
+> Cosmic agriculture — biodynamic wisdom paired with real-time planetary data (weather, moon
+> phase, space weather) to help growers plant, tend, and harvest on the right day.
+
+KosmoGrow is built on Kosmophytotrophia: a unified approach combining biodynamic principles,
+lunar and space-weather rhythms, and agricultural knowledge developed over a decade of hands-on
+growing. The primary machine-actionable product is **BD Reports** — on-demand, purchasable
+biodynamic planting reports for any location and date, sold per-request in USDC on Base via the
+[x402](https://x402.org) protocol. No account, API key, or subscription.
+
+## Pages
+
+- [BD Reports](https://kosmogrow.com/bd-reports.html): purchasable biodynamic planting reports —
+  any location, any date up to 90 days out, priced from $0.008 per section. This page explains the
+  product for a human reader; see the API section below for the machine-actionable interface.
+- [KosmoStream Features](https://kosmogrow.com/kosmostream-features.html): overview of the
+  KosmoStream platform and its capabilities.
+- [Science Guide](https://kosmogrow.com/kosmostream-guide.html): the biodynamic calendar, space
+  weather, and crop-timing science behind KosmoStream and BD Reports.
+
+## API
+
+- [BD Reports — llms.txt](https://kosmostream-iaas.kosmogrow.workers.dev/llms.txt): the
+  machine-actionable interface — every paid endpoint, its price, and how to pay via x402/USDC on
+  Base mainnet. Start here for automated purchasing.
+- [OpenAPI spec](https://kosmostream-iaas.kosmogrow.workers.dev/openapi.json): machine-readable
+  schema for the same endpoints.
+- [x402 discovery manifest](https://kosmostream-iaas.kosmogrow.workers.dev/.well-known/x402): one
+  concrete payable URL per endpoint shape, for x402-aware crawlers/marketplaces.
+
+## Optional
+
+- [Kosmophytotrophia Consultation](https://kosmogrow.com/#services): human-delivered biodynamic
+  growing consultations — not a machine-actionable resource.
+- [KosmoStream app](https://kosmogrow.com/KosmoStream): the free, browser-only daily almanac.
+  Excluded from crawling via `robots.txt` and has no API — use BD Reports above for anything
+  programmatic.
+- Contact: hello@kosmogrow.com

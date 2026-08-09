@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BD Reports — Purchasable Biodynamic Planting Reports | KosmoGrow</title>
+  <meta name="description"
+        content="On-demand biodynamic planting reports for any farm location and date — weather, moon phase, and planting guidance. Pay a few cents online, no account or subscription." />
+  <link rel="canonical" href="https://kosmogrow.com/bd-reports.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://kosmogrow.com/bd-reports.html" />
+  <meta property="og:title" content="BD Reports — Purchasable Biodynamic Planting Reports" />
+  <meta property="og:description"
+        content="Pick any location and date, pay a few cents online, get a full biodynamic planting report — no account or subscription." />
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ─── Base ─────────────────────────────────── */
+    body {
+      background-color: #060610;
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── Star canvas ───────────────────────────── */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── Content sits above canvas ─────────────── */
+    .above-canvas { position: relative; z-index: 1; }
+
+    /* ─── Gradient text ─────────────────────────── */
+    .gradient-text {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #6ee7b7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── Scroll-reveal fade-up ─────────────────── */
+    .fade-up {
+      opacity: 0;
+      -webkit-transform: translateY(28px);
+              transform: translateY(28px);
+      will-change: transform;
+      -webkit-transition: opacity 0.55s ease, -webkit-transform 0.55s ease;
+              transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      -webkit-transform: translateY(0);
+              transform: translateY(0);
+    }
+    .delay-75  { -webkit-transition-delay:  75ms; transition-delay:  75ms; }
+    .delay-150 { -webkit-transition-delay: 150ms; transition-delay: 150ms; }
+    .delay-225 { -webkit-transition-delay: 225ms; transition-delay: 225ms; }
+    .delay-300 { -webkit-transition-delay: 300ms; transition-delay: 300ms; }
+
+    /* ─── Mobile nav max-height toggle ─────────── */
+    #mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      -webkit-transition: max-height 0.3s ease;
+              transition: max-height 0.3s ease;
+    }
+    #mobile-menu.open { max-height: 560px; }
+
+    /* ─── Card hover glow ───────────────────────── */
+    .card-glow {
+      -webkit-transition: border-color 0.3s ease, box-shadow 0.3s ease, -webkit-transform 0.2s ease;
+              transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    .card-glow:hover {
+      box-shadow: 0 0 28px rgba(52,211,153,0.12), 0 0 56px rgba(52,211,153,0.06);
+      -webkit-transform: translateY(-2px);
+              transform: translateY(-2px);
+    }
+
+    /* ─── Step connector line ───────────────────── */
+    .step-line {
+      position: absolute;
+      top: 20px;
+      left: calc(50% + 28px);
+      right: calc(-50% + 28px);
+      height: 2px;
+      background: linear-gradient(90deg, #34d399 0%, #0d4a34 100%);
+    }
+
+    /* ─── Custom scrollbar ──────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #060610; }
+    ::-webkit-scrollbar-thumb { background: #34d399; border-radius: 3px; }
+  </style>
+
+  <noscript>
+    <style>
+      #mobile-menu { max-height: none !important; }
+      .fade-up { opacity: 1 !important; -webkit-transform: none !important; transform: none !important; }
+    </style>
+  </noscript>
+</head>
+
+<body class="text-slate-100 antialiased">
+
+  <!-- Skip to main content -->
+  <a href="#main-content"
+     class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50
+            focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-black focus:rounded-lg focus:font-semibold">
+    Skip to content
+  </a>
+
+  <!-- ░░░ STAR FIELD CANVAS ░░░ -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <!-- ░░░ NAVIGATION ░░░ -->
+  <header class="above-canvas sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-[#060610]/80">
+    <nav role="navigation" aria-label="Main navigation" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 text-xl font-bold text-white
+                           hover:text-emerald-400 transition-colors duration-200">
+          KosmoGrow <span aria-hidden="true">🌌🌿</span>
+        </a>
+
+        <!-- Desktop links -->
+        <div class="hidden md:flex items-center gap-1">
+          <a href="/"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Home</a>
+          <a href="/#about"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">About</a>
+          <a href="/#services"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Services</a>
+          <a href="/kosmostream-features.html"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">KosmoStream Features</a>
+          <a href="/kosmostream-guide.html"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Science Guide</a>
+          <a href="/bd-reports.html"
+             class="px-3 py-2 text-sm font-medium text-emerald-400
+                    rounded-lg bg-emerald-500/10 transition-all duration-200"
+             aria-current="page">BD Reports</a>
+          <a href="/#contact"
+             class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    rounded-lg hover:bg-white/5 transition-all duration-200">Contact</a>
+        </div>
+
+        <!-- Hamburger -->
+        <button id="menu-btn"
+                aria-label="Toggle mobile menu"
+                aria-expanded="false"
+                aria-controls="mobile-menu"
+                class="md:hidden p-2 rounded-lg text-slate-300 hover:text-emerald-400
+                       hover:bg-white/5 transition-all duration-200">
+          <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile menu panel -->
+      <div id="mobile-menu" role="menu" aria-label="Mobile navigation">
+        <div class="py-3 border-t border-white/10 space-y-1">
+          <a href="/" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Home</a>
+          <a href="/#about" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">About</a>
+          <a href="/#services" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Services</a>
+          <a href="/kosmostream-features.html" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">KosmoStream Features</a>
+          <a href="/kosmostream-guide.html" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Science Guide</a>
+          <a href="/bd-reports.html" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-emerald-400 bg-emerald-500/10
+                    rounded-lg transition-all duration-200" aria-current="page">BD Reports</a>
+          <a href="/#contact" role="menuitem"
+             class="block px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400
+                    hover:bg-white/5 rounded-lg transition-all duration-200">Contact</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="above-canvas">
+
+    <!-- ░░░ HERO ░░░ -->
+    <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden px-4 py-20">
+      <!-- Nebula blobs -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-emerald-800/8 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 w-[800px] h-[800px] rounded-full bg-emerald-900/8  blur-3xl
+                    -translate-x-1/2 -translate-y-1/2"></div>
+      </div>
+
+      <div class="relative text-center max-w-4xl mx-auto">
+        <!-- Breadcrumb -->
+        <nav aria-label="Breadcrumb" class="mb-6 flex items-center justify-center gap-2 text-xs text-slate-500">
+          <a href="/" class="hover:text-emerald-400 transition-colors duration-200">Home</a>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+          <span>BD Reports</span>
+        </nav>
+
+        <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full
+                    border border-emerald-500/30 bg-emerald-500/10
+                    text-emerald-400 text-sm font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+          Pay a Few Cents · No Sign-Up Needed
+        </div>
+
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-5 leading-none text-white">
+          BD Reports
+        </h1>
+
+        <p class="text-xl sm:text-2xl font-light text-slate-300 mb-6">
+          A planting report for <span class="text-emerald-400 font-semibold">your farm, your date</span>
+        </p>
+
+        <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          The free KosmoStream app shows today's biodynamic day for wherever you happen to be. BD
+          Reports go further: tell it exactly where your farm is and which day you're planning for
+          — even months ahead — and it hands back a full report covering the biodynamic calendar,
+          weather, and moon phases. Each report costs a few cents. No sign-up, no app to install,
+          nothing to cancel later.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://kosmostream-iaas.kosmogrow.workers.dev/" target="_blank" rel="noopener noreferrer"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                    text-black font-semibold text-base
+                    shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/30
+                    transition-all duration-200 hover:-translate-y-0.5">
+            Get a Report ↗
+          </a>
+          <a href="#pricing"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl border border-emerald-500/50
+                    text-emerald-400 hover:bg-emerald-500/10
+                    font-semibold text-base transition-all duration-200 hover:-translate-y-0.5">
+            See Pricing
+          </a>
+        </div>
+
+        <p class="text-xs text-slate-500 mt-6">
+          First time paying online this way?
+          <a href="#how-to-pay"
+             class="text-slate-400 hover:text-emerald-400 underline decoration-slate-600 transition-colors duration-200">See how it works, in plain terms ↓</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ░░░ HOW IT WORKS ░░░ -->
+    <section class="relative py-24 px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            How It Works
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            From question to <span class="gradient-text">report</span> in four steps
+          </h2>
+          <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+            No signup form, no dashboard to configure — every report is a single request, paid at
+            the moment you make it.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="relative fade-up">
+            <div class="hidden md:block step-line" aria-hidden="true"></div>
+            <div class="relative flex flex-col items-center text-center">
+              <div class="w-10 h-10 rounded-full bg-emerald-500 text-black font-bold
+                          flex items-center justify-center mb-4 relative z-10">1</div>
+              <h3 class="text-white font-semibold mb-2">Pick a place &amp; date</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Any latitude and longitude, any date up to 90 days out — not just "today, near you."
+              </p>
+            </div>
+          </div>
+          <div class="relative fade-up delay-75">
+            <div class="hidden md:block step-line" aria-hidden="true"></div>
+            <div class="relative flex flex-col items-center text-center">
+              <div class="w-10 h-10 rounded-full bg-emerald-500 text-black font-bold
+                          flex items-center justify-center mb-4 relative z-10">2</div>
+              <h3 class="text-white font-semibold mb-2">Choose your depth</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                One section for a quick answer, or the full 8-section report for the complete picture.
+              </p>
+            </div>
+          </div>
+          <div class="relative fade-up delay-150">
+            <div class="hidden md:block step-line" aria-hidden="true"></div>
+            <div class="relative flex flex-col items-center text-center">
+              <div class="w-10 h-10 rounded-full bg-emerald-500 text-black font-bold
+                          flex items-center justify-center mb-4 relative z-10">3</div>
+              <h3 class="text-white font-semibold mb-2">Pay a few cents</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Pay right on the page with a free wallet app on your phone — like a payment app,
+                but for a digital dollar called USDC.
+                <a href="#how-to-pay" class="text-emerald-400 hover:text-emerald-300 underline decoration-emerald-500/30">New to this? See how ↓</a>
+              </p>
+            </div>
+          </div>
+          <div class="relative fade-up delay-225">
+            <div class="relative flex flex-col items-center text-center">
+              <div class="w-10 h-10 rounded-full bg-emerald-500 text-black font-bold
+                          flex items-center justify-center mb-4 relative z-10">4</div>
+              <h3 class="text-white font-semibold mb-2">Read or print</h3>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Your report loads right in the browser. Save it as a PDF if you'd rather print it
+                and take it out to the field.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ HOW TO PAY (PLAIN ENGLISH) ░░░ -->
+    <section id="how-to-pay" class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/10 to-transparent
+                  pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative max-w-5xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Paying Online, Explained
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Never paid this way before? <span class="gradient-text">Here's everything you need.</span>
+          </h2>
+          <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            You don't need a bank account, a credit card on file, or to create a login. You just
+            need a free "wallet" app — think of it like a payment app on your phone, except it
+            holds a digital dollar called <strong class="text-slate-300">USDC</strong>. $1 of USDC
+            is always worth exactly $1 — the same as cash, just sent over the internet instead of
+            handed over in person.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="fade-up card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-9 h-9 rounded-full bg-emerald-500 text-black font-bold text-sm
+                        flex items-center justify-center mb-4">1</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Get a free wallet app</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Download a wallet app on your phone or computer — Coinbase Wallet is a good place to
+              start. It takes a few minutes to set up, just like any other app.
+            </p>
+          </div>
+          <div class="fade-up delay-75 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-9 h-9 rounded-full bg-emerald-500 text-black font-bold text-sm
+                        flex items-center justify-center mb-4">2</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Add a few dollars</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Buy a small amount of USDC right inside the app with a debit card — same as buying
+              anything else online. Five dollars covers dozens of reports.
+            </p>
+          </div>
+          <div class="fade-up delay-150 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-9 h-9 rounded-full bg-emerald-500 text-black font-bold text-sm
+                        flex items-center justify-center mb-4">3</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Come back and buy a report</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Pick your location and date on the checkout page, choose a report, and click buy.
+            </p>
+          </div>
+          <div class="fade-up delay-225 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-9 h-9 rounded-full bg-emerald-500 text-black font-bold text-sm
+                        flex items-center justify-center mb-4">4</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Approve the payment</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Your wallet app pops up asking you to confirm a payment of a few cents. Tap approve,
+              and your report loads immediately.
+            </p>
+          </div>
+        </div>
+
+        <p class="fade-up delay-300 text-center text-xs text-slate-500 mt-8 max-w-2xl mx-auto">
+          That's the whole process — nothing is stored, no account is created, and you're never
+          charged again unless you buy another report.
+        </p>
+      </div>
+    </section>
+
+    <!-- ░░░ WHAT'S IN A REPORT ░░░ -->
+    <section class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/10 to-transparent
+                  pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            What's Inside
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Eight sections, <span class="gradient-text">buy what you need</span>
+          </h2>
+          <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+            Every section is available on its own, or bundled together in the full report.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="fade-up card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">⚠️</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Alerts</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">Weather and biodynamic warnings that apply to the day.</p>
+          </div>
+          <div class="fade-up delay-75 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">🌱</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Biodynamic Day</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">The day's type — root, leaf, flower, or fruit — and what it favours.</p>
+          </div>
+          <div class="fade-up delay-150 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">🌦️</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">7-Day Weather Forecast</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">Local conditions for the week ahead of your chosen date.</p>
+          </div>
+          <div class="fade-up delay-225 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">🌗</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Sun &amp; Moon</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">Sunrise, sunset, moonrise, moonset, and position data.</p>
+          </div>
+          <div class="fade-up card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">🌕</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Upcoming Moon Phases</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">New, full, and quarter moon dates ahead of your date.</p>
+          </div>
+          <div class="fade-up delay-75 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">📅</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Biodynamic Planning Ranges</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">Upcoming windows for each day type — see the next 33 or 90 days at a glance.</p>
+          </div>
+          <div class="fade-up delay-150 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">☀️</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Space Weather</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">Geomagnetic Kp index and solar activity for the date.</p>
+          </div>
+          <div class="fade-up delay-225 card-glow p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-2xl mb-3" aria-hidden="true">💡</div>
+            <h3 class="text-white font-semibold mb-2 text-sm">Today's Suggestion</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">A plain-language recommendation that pulls the rest together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ PRICING ░░░ -->
+    <section id="pricing" class="relative py-24 px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Pricing
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            What's live <span class="gradient-text">today</span>
+          </h2>
+          <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+            Three ways to buy. Every price below is in US dollars — you just pay it using USDC,
+            a digital dollar, instead of a card. Click any card to buy that one, right now.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Single Section -->
+          <a href="https://kosmostream-iaas.kosmogrow.workers.dev/" target="_blank" rel="noopener noreferrer"
+             data-report-path="/v1/section/bd-today/40.7128/-74.006/{date}"
+             class="fade-up card-glow group block no-underline p-8 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="text-lg font-bold text-white mb-1">Single Section</h3>
+            <p class="text-slate-400 text-sm mb-5">Any one of the eight sections above.</p>
+            <div class="mb-2">
+              <span class="text-4xl font-extrabold text-white">$0.008</span>
+              <span class="text-slate-500 text-sm"> / report</span>
+            </div>
+            <p class="text-slate-500 text-xs mb-6">Less than a penny</p>
+            <ul class="space-y-2.5 text-sm text-slate-400 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                One section, one location, one date
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Cheapest way to try before buying more
+              </li>
+            </ul>
+            <p class="text-sm font-semibold text-emerald-400 group-hover:text-emerald-300">
+              Buy this section ↗
+            </p>
+          </a>
+
+          <!-- Full Report — Recommended -->
+          <a href="https://kosmostream-iaas.kosmogrow.workers.dev/" target="_blank" rel="noopener noreferrer"
+             data-report-path="/v1/report/40.7128/-74.006/{date}"
+             class="fade-up delay-75 relative card-glow group block no-underline p-8 rounded-2xl
+                    bg-emerald-950/40 border border-emerald-500/25 overflow-hidden">
+            <div class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full text-xs font-bold
+                        bg-emerald-500 text-black">Recommended</div>
+            <h3 class="text-lg font-bold text-white mb-1">Full Report</h3>
+            <p class="text-slate-400 text-sm mb-5">All eight sections, one location and date.</p>
+            <div class="mb-2">
+              <span class="text-4xl font-extrabold text-white">$0.08</span>
+              <span class="text-slate-500 text-sm"> / report</span>
+            </div>
+            <p class="text-slate-500 text-xs mb-6">Eight cents</p>
+            <ul class="space-y-2.5 text-sm text-slate-400 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Every section, bundled
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Planning ranges &amp; moon phases, 33 days out
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                The default most buyers want
+              </li>
+            </ul>
+            <p class="text-sm font-semibold text-emerald-400 group-hover:text-emerald-300">
+              Buy the full report ↗
+            </p>
+          </a>
+
+          <!-- Full Report — Extended -->
+          <a href="https://kosmostream-iaas.kosmogrow.workers.dev/" target="_blank" rel="noopener noreferrer"
+             data-report-path="/v1/report/full/40.7128/-74.006/{date}"
+             class="fade-up delay-150 card-glow group block no-underline p-8 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="text-lg font-bold text-white mb-1">Full Report — Extended</h3>
+            <p class="text-slate-400 text-sm mb-5">The full report, with a longer look-ahead.</p>
+            <div class="mb-2">
+              <span class="text-4xl font-extrabold text-white">$0.125</span>
+              <span class="text-slate-500 text-sm"> / report</span>
+            </div>
+            <p class="text-slate-500 text-xs mb-6">About twelve and a half cents</p>
+            <ul class="space-y-2.5 text-sm text-slate-400 mb-6">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Every section, bundled
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                Planning ranges &amp; moon phases extended to 90 days out
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5 font-semibold">✓</span>
+                For planting-season planning, not just one date
+              </li>
+            </ul>
+            <p class="text-sm font-semibold text-emerald-400 group-hover:text-emerald-300">
+              Buy the extended report ↗
+            </p>
+          </a>
+        </div>
+
+        <p class="text-center text-xs text-slate-500 mt-8 max-w-2xl mx-auto">
+          Every price above is exactly what you'll pay — no hidden fees, no monthly charges. You
+          pay once, for one report, right when you buy it. Each card opens straight to that
+          report's own checkout page — pre-filled and ready, just like scanning a QR code would.
+          <a href="#how-to-pay" class="text-slate-400 hover:text-emerald-400 underline decoration-slate-600 transition-colors duration-200">How does paying work?</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ░░░ FREE APP VS BD REPORTS ░░░ -->
+    <section class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/10 to-transparent
+                  pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative max-w-4xl mx-auto">
+        <div class="text-center mb-12 fade-up">
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                      border border-emerald-500/30 bg-emerald-500/10
+                      text-emerald-400 text-xs font-medium uppercase tracking-wider">
+            Free App vs. BD Reports
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Two different jobs
+          </h2>
+          <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+            The free app and BD Reports aren't competing — they're for different moments.
+          </p>
+        </div>
+
+        <div class="fade-up delay-100 overflow-x-auto rounded-2xl border border-white/10">
+          <table class="w-full text-sm text-left border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-white/5 text-slate-300">
+                <th class="px-5 py-4 font-semibold"></th>
+                <th class="px-5 py-4 font-semibold">Free KosmoStream App</th>
+                <th class="px-5 py-4 font-semibold text-emerald-400">BD Reports</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-400">
+              <tr class="border-t border-white/10">
+                <td class="px-5 py-4 font-medium text-slate-300">Location</td>
+                <td class="px-5 py-4">Wherever you are</td>
+                <td class="px-5 py-4">Any coordinates worldwide</td>
+              </tr>
+              <tr class="border-t border-white/10">
+                <td class="px-5 py-4 font-medium text-slate-300">Date</td>
+                <td class="px-5 py-4">Today, with a short outlook</td>
+                <td class="px-5 py-4">Any date, up to 90 days out</td>
+              </tr>
+              <tr class="border-t border-white/10">
+                <td class="px-5 py-4 font-medium text-slate-300">Depth</td>
+                <td class="px-5 py-4">Day type &amp; watering suggestion</td>
+                <td class="px-5 py-4">Full 8-section report — weather, moon, space weather, planning ranges</td>
+              </tr>
+              <tr class="border-t border-white/10">
+                <td class="px-5 py-4 font-medium text-slate-300">Format</td>
+                <td class="px-5 py-4">In-app view</td>
+                <td class="px-5 py-4">Formatted report, PDF, or raw JSON</td>
+              </tr>
+              <tr class="border-t border-white/10">
+                <td class="px-5 py-4 font-medium text-slate-300">Cost</td>
+                <td class="px-5 py-4">Free</td>
+                <td class="px-5 py-4">From under a penny, pay per report</td>
+              </tr>
+              <tr class="border-t border-white/10">
+                <td class="px-5 py-4 font-medium text-slate-300">Built for</td>
+                <td class="px-5 py-4">A casual daily check-in</td>
+                <td class="px-5 py-4">A specific answer for a specific place and day</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ BUILT FOR AGENTS ░░░ -->
+    <section class="relative py-16 px-4">
+      <div class="max-w-4xl mx-auto fade-up">
+        <div class="text-center mb-4">
+          <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full
+                       border border-white/10 bg-white/5 text-slate-500 text-xs font-medium
+                       uppercase tracking-wider">
+            Technical details — not needed to buy a report
+          </span>
+        </div>
+        <div class="p-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row gap-6 items-start">
+          <div class="text-3xl flex-shrink-0" aria-hidden="true">🤖</div>
+          <div>
+            <h3 class="text-white font-semibold mb-2">Built for developers and automated buyers, too</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              BD Reports speak the <a href="https://x402.org" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline decoration-emerald-500/30">x402</a>
+              protocol natively: every paid endpoint returns machine-readable payment instructions on
+              first request, so a coding agent or automated buyer can pay and retry without a human
+              in the loop.
+            </p>
+            <div class="flex flex-wrap gap-3 text-xs">
+              <a href="https://kosmostream-iaas.kosmogrow.workers.dev/openapi.json" target="_blank" rel="noopener noreferrer"
+                 class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors duration-200">
+                OpenAPI spec ↗
+              </a>
+              <a href="https://kosmostream-iaas.kosmogrow.workers.dev/llms.txt" target="_blank" rel="noopener noreferrer"
+                 class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors duration-200">
+                llms.txt ↗
+              </a>
+              <a href="https://kosmostream-iaas.kosmogrow.workers.dev/.well-known/x402" target="_blank" rel="noopener noreferrer"
+                 class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/30 transition-colors duration-200">
+                x402 discovery manifest ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ FINAL CTA ░░░ -->
+    <section class="relative py-24 px-4 overflow-hidden">
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px]
+                    rounded-full bg-emerald-500/6 blur-3xl"></div>
+      </div>
+
+      <div class="relative max-w-3xl mx-auto text-center fade-up">
+        <div class="p-px rounded-3xl bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent">
+          <div class="px-8 sm:px-14 py-12 sm:py-16 rounded-3xl bg-[#060610]/95
+                      border border-emerald-500/15">
+            <div class="text-5xl mb-5" aria-hidden="true">🌌</div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Get your first report
+            </h2>
+            <p class="text-slate-400 leading-relaxed mb-8 max-w-xl mx-auto">
+              Pick a location and date, choose a section or the full report, pay a few cents — and
+              read the result in under a minute.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href="https://kosmostream-iaas.kosmogrow.workers.dev/" target="_blank" rel="noopener noreferrer"
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                        px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400
+                        text-black font-semibold text-base transition-all duration-200
+                        shadow-lg shadow-emerald-500/25 hover:-translate-y-0.5">
+                Get a Report ↗
+              </a>
+              <a href="/"
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                        px-8 py-3.5 rounded-xl border border-white/20
+                        text-slate-300 hover:text-white hover:border-white/40
+                        font-medium text-base transition-all duration-200 hover:-translate-y-0.5">
+                ← Back to Home
+              </a>
+            </div>
+            <p class="text-xs text-slate-500 mt-6">
+              That link opens at
+              <span class="text-slate-400">kosmostream-iaas.kosmogrow.workers.dev</span> — our
+              temporary web address while a simpler one is on the way. It's the same site.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ░░░ FOOTER ░░░ -->
+  <footer class="above-canvas border-t border-white/10 bg-[#060610]/80 backdrop-blur-md pt-16 pb-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+        <!-- Col 1 -->
+        <div>
+          <a href="/" class="inline-flex items-center gap-2 text-xl font-bold text-white mb-3
+                             hover:text-emerald-400 transition-colors duration-200">
+            KosmoGrow <span aria-hidden="true">🌌🌿</span>
+          </a>
+          <p class="text-slate-400 text-sm leading-relaxed mt-2">
+            Cosmic Agriculture, Grounded in Results. Aligning biodynamic wisdom
+            with the precision of modern data science.
+          </p>
+          <div class="flex items-center gap-2 mt-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+            <a href="https://kosmostream-iaas.kosmogrow.workers.dev/" target="_blank" rel="noopener noreferrer"
+               class="text-xs text-emerald-400 font-medium hover:text-emerald-300 transition-colors duration-200">BD Reports are live ↗</a>
+          </div>
+        </div>
+
+        <!-- Col 2 -->
+        <div>
+          <h4 class="text-white font-semibold mb-5 text-xs uppercase tracking-wider">Navigation</h4>
+          <ul class="space-y-3">
+            <li><a href="/"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Home</a></li>
+            <li><a href="/#about"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">About</a></li>
+            <li><a href="/#services"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Services</a></li>
+            <li><a href="/kosmostream-features.html"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">KosmoStream Features</a></li>
+            <li><a href="/kosmostream-guide.html"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Science Guide</a></li>
+            <li><a href="/bd-reports.html"
+                   class="text-emerald-400 text-sm transition-colors duration-200">BD Reports</a></li>
+            <li><a href="/#contact"
+                   class="text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3 -->
+        <div>
+          <h4 class="text-white font-semibold mb-5 text-xs uppercase tracking-wider">Connect</h4>
+          <p class="text-slate-400 text-sm mb-5">
+            Follow our cosmic journey and join a growing community of biodynamic growers.
+          </p>
+          <ul class="space-y-3">
+            <li>
+              <a href="https://x.com/KosmoGrow" target="_blank" rel="noopener noreferrer"
+                 aria-label="X / Twitter (@KosmoGrow)"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401
+                           6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161
+                           17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+                </svg>
+                @KosmoGrow on X
+              </a>
+            </li>
+            <li>
+              <a href="https://kosmogrow.com" target="_blank" rel="noopener noreferrer"
+                 aria-label="KosmoGrow website"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
+                </svg>
+                kosmogrow.com
+              </a>
+            </li>
+            <li>
+              <a href="/#contact"
+                 class="flex items-center gap-3 text-slate-400 hover:text-emerald-400 text-sm transition-colors duration-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0
+                           00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                hello@kosmogrow.com
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center
+                  justify-between gap-4 text-xs text-slate-500">
+        <p>© 2026 KosmoGrow. All rights reserved. Grown with 🌌 and 🌿.</p>
+        <div class="flex items-center gap-5">
+          <a href="#" class="hover:text-emerald-400 transition-colors duration-200">Privacy Policy</a>
+          <a href="#" class="hover:text-emerald-400 transition-colors duration-200">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ░░░ SCRIPTS ░░░ -->
+  <script>
+  /* ============================================================
+     1. STAR FIELD CANVAS
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById('starfield');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var NUM = 160;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function makeStar() {
+      return {
+        x:     Math.random() * canvas.width,
+        y:     Math.random() * canvas.height,
+        r:     Math.random() * 1.1 + 0.2,
+        base:  Math.random() * 0.55 + 0.15,
+        speed: Math.random() * 0.6 + 0.2,
+        phase: Math.random() * Math.PI * 2
+      };
+    }
+
+    function init() {
+      stars = [];
+      for (var i = 0; i < NUM; i++) stars.push(makeStar());
+    }
+
+    var last = Date.now();
+    function draw() {
+      var now = Date.now();
+      var dt  = Math.min((now - last) / 1000, 0.1);
+      last = now;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.phase += s.speed * dt;
+        var alpha = s.base * (0.5 + 0.5 * Math.sin(s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { resize(); init(); }, 200);
+    });
+
+    resize();
+    init();
+
+    if (window.requestAnimationFrame) {
+      draw();
+    } else {
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + s.base.toFixed(3) + ')';
+        ctx.fill();
+      }
+    }
+  }());
+
+  /* ============================================================
+     2. HAMBURGER MENU
+     ============================================================ */
+  (function () {
+    var btn       = document.getElementById('menu-btn');
+    var menu      = document.getElementById('mobile-menu');
+    var iconOpen  = document.getElementById('icon-open');
+    var iconClose = document.getElementById('icon-close');
+    if (!btn || !menu) return;
+
+    var open = false;
+
+    function setOpen(state) {
+      open = state;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        menu.classList.add('open');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+      } else {
+        menu.classList.remove('open');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      }
+    }
+
+    btn.addEventListener('click', function () { setOpen(!open); });
+
+    var links = menu.querySelectorAll('a');
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', function () { setOpen(false); });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (open && !btn.contains(e.target) && !menu.contains(e.target)) {
+        setOpen(false);
+      }
+    });
+  }());
+
+  /* ============================================================
+     3. SCROLL-REVEAL  (IntersectionObserver + older-phone fallback)
+     ============================================================ */
+  (function () {
+    var els = document.querySelectorAll('.fade-up');
+    if (!els.length) return;
+
+    if (!('IntersectionObserver' in window) ||
+        !('IntersectionObserverEntry' in window)) {
+      for (var i = 0; i < els.length; i++) {
+        els[i].classList.add('visible');
+      }
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var j = 0; j < entries.length; j++) {
+        if (entries[j].isIntersecting) {
+          entries[j].target.classList.add('visible');
+          observer.unobserve(entries[j].target);
+        }
+      }
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    for (var i = 0; i < els.length; i++) {
+      observer.observe(els[i]);
+    }
+  }());
+
+  /* ============================================================
+     4. PRICING CARD DEEP LINKS
+     Each card's data-report-path is the same {lat}/{lon}/{date} shape the
+     checkout widget's own catalog uses. The widget opens straight to one
+     item's checkout when given a `?url=` query param — that's exactly what
+     its "share via QR" feature encodes, so this reproduces the same link a
+     scanned QR would open, just as a normal href. The date is filled in here
+     (not hardcoded) so the link is always "today," never a date that ages
+     into the past the longer this page sits live.
+     ============================================================ */
+  (function () {
+    var today = new Date().toISOString().slice(0, 10);
+    var cards = document.querySelectorAll('[data-report-path]');
+    for (var i = 0; i < cards.length; i++) {
+      var path = cards[i].getAttribute('data-report-path').replace('{date}', today);
+      cards[i].href = 'https://kosmostream-iaas.kosmogrow.workers.dev/?url=' + encodeURIComponent(path);
+    }
+  }());
+  </script>
+</body>
+</html>
