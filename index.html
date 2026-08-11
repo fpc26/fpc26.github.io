@@ -561,6 +561,57 @@
       </div>
     </section>
 
+    <!-- ░░░ LIVE ACTIVITY ░░░ -->
+    <section class="relative py-24 px-4">
+      <div class="max-w-5xl mx-auto text-center fade-up">
+        <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full
+                    border border-emerald-500/30 bg-emerald-500/10
+                    text-emerald-400 text-xs font-medium uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+          Live Activity
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+          Real farmers, real reports
+        </h2>
+        <p class="text-slate-400 leading-relaxed mb-10 max-w-2xl mx-auto">
+          Every BD Report is a real, on-chain payment settled through our self-hosted
+          facilitator — not a demo. Here's what's actually happening right now.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-10">
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10 card-glow">
+            <div class="text-3xl font-bold text-emerald-400 mb-1" id="stat-total">—</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Reports Settled</div>
+          </div>
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10 card-glow">
+            <div class="text-3xl font-bold text-emerald-400 mb-1" id="stat-countries">—</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Countries Reached</div>
+          </div>
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10 card-glow">
+            <div class="text-3xl font-bold text-emerald-400 mb-1" id="stat-today">—</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Reports Today</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://kosmostream-facilitator.kosmogrow.workers.dev/globe" target="_blank" rel="noopener noreferrer"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl border border-emerald-500/50
+                    text-emerald-400 hover:bg-emerald-500/10
+                    font-semibold text-base transition-all duration-200 hover:-translate-y-0.5">
+            See the World Map ↗
+          </a>
+          <a href="https://kosmostream-facilitator.kosmogrow.workers.dev/dashboard" target="_blank" rel="noopener noreferrer"
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-2
+                    px-8 py-3.5 rounded-xl border border-white/20
+                    text-slate-300 hover:text-white hover:border-white/40
+                    font-medium text-base transition-all duration-200 hover:-translate-y-0.5">
+            Full Activity Dashboard ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- ░░░ CONTACT ░░░ -->
     <section id="contact" class="relative py-24 px-4">
       <div class="max-w-2xl mx-auto">
@@ -943,6 +994,44 @@
     for (var i = 0; i < els.length; i++) {
       observer.observe(els[i]);
     }
+  }());
+
+  /* ============================================================
+     4. LIVE ACTIVITY STATS  (public, unauthenticated facilitator API —
+        see kosmostream-facilitator's /dashboard/api/{summary,locations},
+        both already CORS-open. Leaves the "—" placeholder on any
+        failure rather than showing an error, same as this page's other
+        best-effort widgets.)
+     ============================================================ */
+  (function () {
+    var elTotal     = document.getElementById('stat-total');
+    var elCountries = document.getElementById('stat-countries');
+    var elToday     = document.getElementById('stat-today');
+    if (!elTotal || !elCountries || !elToday) return;
+
+    var FACILITATOR = 'https://kosmostream-facilitator.kosmogrow.workers.dev';
+
+    function fmt(n) {
+      return typeof n === 'number' ? n.toLocaleString() : '—';
+    }
+
+    fetch(FACILITATOR + '/dashboard/api/summary')
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (data && typeof data.totalSettlements === 'number') {
+          elTotal.textContent = fmt(data.totalSettlements);
+        }
+      })
+      .catch(function () { /* transient failure — leave placeholder */ });
+
+    fetch(FACILITATOR + '/dashboard/api/locations?limit=100')
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        if (Array.isArray(data.byCountry)) elCountries.textContent = fmt(data.byCountry.length);
+        if (typeof data.today === 'number') elToday.textContent = fmt(data.today);
+      })
+      .catch(function () { /* transient failure — leave placeholder */ });
   }());
   </script>
 </body>
