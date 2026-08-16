@@ -18,6 +18,9 @@ biodynamic planting reports for any location and date, sold per-request in USDC 
   KosmoStream platform and its capabilities.
 - [Science Guide](https://kosmogrow.com/kosmostream-guide.html): the biodynamic calendar, space
   weather, and crop-timing science behind KosmoStream and BD Reports.
+- [Garden practice](https://kosmogrow.com/garden-practice.html): public free-gardener notes —
+  KPT umbrella, six Domain names, cursory day-types, and Kp. Machine copy:
+  [llms-garden.txt](https://kosmogrow.com/llms-garden.txt).
 
 ## API
 
